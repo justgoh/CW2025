@@ -61,10 +61,14 @@
                         <id>default-cli</id>
                         <configuration>
 <<<<<<< HEAD
+<<<<<<< HEAD
                             <mainClass>com.comp2042.Main</mainClass>
 =======
                             <mainClass>com.comp2042.view.Main</mainClass>
 >>>>>>> 1refactor
+=======
+                            <mainClass>com.comp2042.view.Main</mainClass>
+>>>>>>> 2maintanence
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

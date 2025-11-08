@@ -28,6 +28,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean moveBrickDown() {
+<<<<<<< HEAD
         int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
         Point newoffset = new Point(brickOffset);
         newoffset.translate(0, 1);
@@ -38,11 +39,15 @@ public class SimpleBoard implements Board {
             brickOffset = newoffset;
             return true;
         }
+=======
+        return tryMoveBrick(0, 1);
+>>>>>>> 2maintanence
     }
 
 
     @Override
     public boolean moveBrickLeft() {
+<<<<<<< HEAD
         int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
         Point newOffset = new Point(brickOffset);
         newOffset.translate(-1, 0);
@@ -53,10 +58,14 @@ public class SimpleBoard implements Board {
             brickOffset = newOffset;
             return true;
         }
+=======
+        return tryMoveBrick(-1, 0);
+>>>>>>> 2maintanence
     }
 
     @Override
     public boolean moveBrickRight() {
+<<<<<<< HEAD
         int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
         Point newOffset = new Point(brickOffset);
         newOffset.translate(1, 0);
@@ -67,17 +76,29 @@ public class SimpleBoard implements Board {
             brickOffset = newOffset;
             return true;
         }
+=======
+        return tryMoveBrick(1, 0);
+>>>>>>> 2maintanence
     }
 
     @Override
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
+<<<<<<< HEAD
         NextShapeInfo nextrotationShape = brickRotator.getNextShape();
         boolean conflict = MatrixOperations.intersect(currentMatrix, nextrotationShape.getShape(), (int) brickOffset.getX(), (int) brickOffset.getY());
         if (conflict) {
             return false;
         } else {
             brickRotator.setCurrentShape(nextrotationShape.getPosition());
+=======
+        NextShapeInfo nextRotationShape = brickRotator.getNextShape();
+        boolean conflict = MatrixOperations.intersect(currentMatrix, nextRotationShape.getShape(), (int) brickOffset.getX(), (int) brickOffset.getY());
+        if (conflict) {
+            return false;
+        } else {
+            brickRotator.setCurrentShape(nextRotationShape.getPosition());
+>>>>>>> 2maintanence
             return true;
         }
     }
@@ -125,4 +146,27 @@ public class SimpleBoard implements Board {
         score.reset();
         createNewBrick();
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Helper to move current brick by a given (dx, dy) offset
+     *
+     * @param dx horizontal movement (-1= left, 1= right, 0= none)
+     * @param dy vertical movement (-1= up, 1= down, 0= none)
+     * @return true if the brick moved successfully, false if unsuccessful
+     */
+    private boolean tryMoveBrick(int dx, int dy) {
+        int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
+        Point newOffset = new Point(brickOffset);
+        newOffset.translate(dx, dy);
+        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) newOffset.getX(), (int) newOffset.getY());
+
+        if (!conflict) {
+            brickOffset = newOffset;
+            return true;
+        }
+        return false;
+    }
+>>>>>>> 2maintanence
 }

@@ -11,8 +11,17 @@ public final class Score {
         return score;
     }
 
+<<<<<<< HEAD
     public void add(int i){
         score.setValue(score.getValue() + i);
+=======
+    public int getScore() {
+        return score.get();
+    }
+
+    public void add(int points) {
+        score.setValue(score.getValue() + points);
+>>>>>>> 2maintanence
     }
 
     public void reset() {
