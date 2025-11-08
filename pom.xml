@@ -60,7 +60,11 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
+<<<<<<< HEAD
                             <mainClass>com.comp2042.Main</mainClass>
+=======
+                            <mainClass>com.comp2042.view.Main</mainClass>
+>>>>>>> 1refactor
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
