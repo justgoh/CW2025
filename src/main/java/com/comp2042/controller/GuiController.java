@@ -1,5 +1,7 @@
 package com.comp2042.controller;
 
+import com.comp2042.model.HighScoreManager;
+import com.comp2042.model.Score;
 import com.comp2042.view.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -11,9 +13,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -27,6 +31,15 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
+
+    @FXML
+    private Label highScoreLabel;
+
+    @FXML
+    private Label scoreLabel;
+
+    @FXML
+    private BorderPane gameBoard;
 
     @FXML
     private GridPane gamePanel;
@@ -51,6 +64,9 @@ public class GuiController implements Initializable {
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+
+    private Score score = new Score();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -84,6 +100,10 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
+
+        HighScoreManager hsm = new HighScoreManager();
+        int highscore = hsm.loadHighScore();
+        highScoreLabel.setText("High Score: " + highscore);
 
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
@@ -191,6 +211,10 @@ public class GuiController implements Initializable {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
+
+                if (score != null) {
+                    score.add(downData.getClearRow().getScoreBonus());
+                }
             }
             refreshBrick(downData.getViewData());
         }
@@ -201,18 +225,33 @@ public class GuiController implements Initializable {
         this.eventListener = eventListener;
     }
 
-    public void bindScore(IntegerProperty integerProperty) {
+    public void bindScore(IntegerProperty scoreProperty) {
+        scoreLabel.textProperty().bind(scoreProperty.asString("Score: %d"));
     }
 
     public void gameOver() {
         timeLine.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
+
+        int finalScore = score.getScore();
+        HighScoreManager hsm = new HighScoreManager();
+        int prevHighScore = hsm.loadHighScore();
+
+        if (finalScore > prevHighScore) {
+            hsm.saveHighScore(finalScore);
+            highScoreLabel.setText("High Score: " + finalScore);
+        }
     }
 
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         gameOverPanel.setVisible(false);
+        score = new Score();
+        bindScore(score.scoreProperty());
+        HighScoreManager hsm = new HighScoreManager();
+        int highscore = hsm.loadHighScore();
+        highScoreLabel.setText(("High Score: " + highscore));
         eventListener.createNewGame();
         gamePanel.requestFocus();
         timeLine.play();
@@ -222,5 +261,9 @@ public class GuiController implements Initializable {
 
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
+    }
+
+    public void updateHighScoreLabel(int highscore) {
+        highScoreLabel.setText("High Score: " + highscore);
     }
 }

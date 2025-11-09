@@ -2,6 +2,7 @@ package com.comp2042.controller;
 
 import com.comp2042.model.Board;
 import com.comp2042.model.ClearRow;
+import com.comp2042.model.HighScoreManager;
 import com.comp2042.model.SimpleBoard;
 import com.comp2042.view.*;
 
@@ -10,6 +11,8 @@ public class GameController implements InputEventListener {
     private Board gameBoard = new SimpleBoard(25, 10);
 
     private final GuiController guiController;
+
+    private final HighScoreManager highScoreManager = new HighScoreManager();
 
     public GameController(GuiController guiController) {
         this.guiController = guiController;
@@ -30,6 +33,14 @@ public class GameController implements InputEventListener {
                 gameBoard.getScore().add(clearRow.getScoreBonus());
             }
             if (gameBoard.createNewBrick()) {
+                int currentScore = gameBoard.getScore().getScore();
+                int savedHighScore = highScoreManager.loadHighScore();
+
+                if (currentScore > savedHighScore) {
+                    highScoreManager.saveHighScore(currentScore);
+                }
+
+                guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
                 guiController.gameOver();
             }
 
@@ -66,5 +77,7 @@ public class GameController implements InputEventListener {
     public void createNewGame() {
         gameBoard.newGame();
         guiController.refreshGameBackground(gameBoard.getBoardMatrix());
+
+        guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
     }
 }
