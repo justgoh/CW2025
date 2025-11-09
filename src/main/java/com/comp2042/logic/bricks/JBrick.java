@@ -1,14 +1,10 @@
 package com.comp2042.logic.bricks;
 
 <<<<<<< HEAD
-<<<<<<< HEAD
 import com.comp2042.MatrixOperations;
 =======
 import com.comp2042.model.MatrixOperations;
 >>>>>>> 1refactor
-=======
-import com.comp2042.model.MatrixOperations;
->>>>>>> 2maintanence
 
 import java.util.ArrayList;
 import java.util.List;
