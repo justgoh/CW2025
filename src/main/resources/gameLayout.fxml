@@ -1,30 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.comp2042.view.GameOverPanel?>
-<?import java.net.URL?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.Group?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-
-<Pane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.comp2042.controller.GuiController">
-    <GridPane fx:id="brickPanel" hgap="1" vgap="1" />
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+<Pane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.comp2042.controller.GuiController">
+    <GridPane fx:id="brickPanel" hgap="1" vgap="1"/>
     <BorderPane fx:id="gameBoard" styleClass="gameBoard">
         <center>
-            <GridPane fx:id="gamePanel" hgap="1" layoutX="40" layoutY="30" vgap="1" />
+            <GridPane fx:id="gamePanel" hgap="1" layoutX="40" layoutY="30" vgap="1"/>
         </center>
     </BorderPane>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel" />
+            <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
-    <Label fx:id="scoreLabel" layoutX="224.0" layoutY="61.0" styleClass="scoreStyle" text="Score: 0" textFill="#52b49b" />
-    <Label fx:id="highScoreLabel" layoutX="224.0" layoutY="36.0" styleClass="scoreStyle" text="High Score: 0" textFill="beige" />
+    <Label fx:id="scoreLabel" layoutX="224.0" layoutY="61.0" styleClass="scoreStyle" text="Score: 0"
+           textFill="#52b49b"/>
+    <Label fx:id="highScoreLabel" layoutX="224.0" layoutY="25.0" styleClass="scoreStyle" text="High Score: 0"
+           textFill="beige"/>
+    <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#pauseGame" text="Pause" textFill="#23c42a"/>
+    <VBox fx:id="pauseMenu" alignment="CENTER" layoutX="50.0" layoutY="50.0" prefHeight="200.0" prefWidth="100.0"
+          spacing="15.0" visible="false">
+        <children>
+            <Button fx:id="quitButton" mnemonicParsing="false" onAction="#quitGame" text="Quit" textFill="#c43737"/>
+            <Button fx:id="restartButton" mnemonicParsing="false" onAction="#restartGame" text="Restart"/>
+        </children>
+    </VBox>
+    <VBox fx:id="leaderMenu" alignment="CENTER" prefHeight="300.0" prefWidth="250.0" spacing="15.0" layoutX="100"
+          layoutY="50" visible="false"
+          style="-fx-background-color: rgba(51,51,51,0.8); -fx-background-radius:15; -fx-padding: 10;">
+        <children>
+            <Button fx:id="closeLeaderboardButton" mnemonicParsing="false" onAction="#closeLeaderboard" text="Close"
+                    style="-fx-background-color: #ff5555; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 10;"/>
+            <Label text="Leaderboard" textFill="white">
+                <font>
+                    <Font name="System Bold" size="36.0"/>
+                </font>
+            </Label>
+            <VBox fx:id="leaderboardList" alignment="CENTER" prefHeight="200.0" prefWidth="200.0" spacing="8.0"
+                  style="-fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 15; -fx-padding: 10;"/>
+        </children>
+    </VBox>
+    <Button fx:id="leaderboardButton" layoutX="219.0" layoutY="97.0" mnemonicParsing="false" onAction="#showLeaderboard"
+            text="Leaderboard"/>
     <stylesheets>
-        <URL value="@window_style.css" />
+        <URL value="@window_style.css"/>
     </stylesheets>
 </Pane>

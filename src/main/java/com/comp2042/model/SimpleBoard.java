@@ -86,8 +86,8 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        brickOffset = new Point(4, 10);
-        return MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), (int) brickOffset.getX(), (int) brickOffset.getY());
+        brickOffset = new Point(4, 0);
+        return MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y);
     }
 
     @Override
@@ -123,6 +123,8 @@ public class SimpleBoard implements Board {
     public void newGame() {
         boardMatrix = new int[width][height];
         score.reset();
+        brickRotator.setBrick(brickGenerator.getBrick());
+        brickOffset = new Point(4, 0);
         createNewBrick();
     }
 }

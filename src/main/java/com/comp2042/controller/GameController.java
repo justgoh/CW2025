@@ -36,9 +36,7 @@ public class GameController implements InputEventListener {
                 int currentScore = gameBoard.getScore().getScore();
                 int savedHighScore = highScoreManager.loadHighScore();
 
-                if (currentScore > savedHighScore) {
-                    highScoreManager.saveHighScore(currentScore);
-                }
+                highScoreManager.addScore(currentScore);
 
                 guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
                 guiController.gameOver();

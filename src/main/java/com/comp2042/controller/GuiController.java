@@ -13,12 +13,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -26,17 +28,12 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
-
-    @FXML
-    private Label highScoreLabel;
-
-    @FXML
-    private Label scoreLabel;
 
     @FXML
     private BorderPane gameBoard;
@@ -52,6 +49,33 @@ public class GuiController implements Initializable {
 
     @FXML
     private GameOverPanel gameOverPanel;
+
+    @FXML
+    private Label highScoreLabel;
+
+    @FXML
+    private Label scoreLabel;
+
+    @FXML
+    private VBox pauseMenu;
+
+    @FXML
+    private Button restartButton;
+
+    @FXML
+    private Button quitButton;
+
+    @FXML
+    private Button pauseButton;
+
+    @FXML
+    private VBox leaderMenu;
+
+    @FXML
+    private VBox leaderboardList;
+
+    @FXML
+    private Button closeLeaderboardButton;
 
     private Rectangle[][] displayMatrix;
 
@@ -76,7 +100,14 @@ public class GuiController implements Initializable {
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+                if (isGameOver.getValue()) return;
+                if (keyEvent.getCode() == KeyCode.P) {
+                    isPause.setValue(!isPause.getValue());
+                    pauseMenu.setVisible(isPause.getValue());
+                    keyEvent.consume();
+                    return;
+                }
+                if (!isPause.getValue()) {
                     if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
                         refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
                         keyEvent.consume();
@@ -96,6 +127,7 @@ public class GuiController implements Initializable {
                 }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
+                    keyEvent.consume();
                 }
             }
         });
@@ -238,10 +270,10 @@ public class GuiController implements Initializable {
         HighScoreManager hsm = new HighScoreManager();
         int prevHighScore = hsm.loadHighScore();
 
-        if (finalScore > prevHighScore) {
-            hsm.saveHighScore(finalScore);
-            highScoreLabel.setText("High Score: " + finalScore);
-        }
+        hsm.addScore(finalScore);
+
+        int currentHighScore = hsm.loadHighScore();
+        highScoreLabel.setText("High Score: " + currentHighScore);
     }
 
     public void newGame(ActionEvent actionEvent) {
@@ -257,13 +289,46 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
-    }
-
-    public void pauseGame(ActionEvent actionEvent) {
-        gamePanel.requestFocus();
+        pauseMenu.setVisible(false);
     }
 
     public void updateHighScoreLabel(int highscore) {
         highScoreLabel.setText("High Score: " + highscore);
     }
+
+    public void pauseGame(ActionEvent actionEvent) {
+        isPause.setValue(!isPause.getValue());
+        pauseMenu.setVisible(isPause.getValue());
+        gamePanel.requestFocus();
+    }
+
+    public void restartGame(ActionEvent actionEvent) {
+        newGame(null);
+    }
+
+    public void quitGame(ActionEvent actionEvent) {
+        System.exit(0);
+    }
+
+    public void showLeaderboard() {
+        leaderboardList.getChildren().clear();
+
+        HighScoreManager hsm = new HighScoreManager();
+        List<Integer> topScores = hsm.loadScores();
+
+        for (int i = 0; i < topScores.size(); i++) {
+            Label s = new Label((i + 1) + "." + topScores.get(i));
+            s.setTextFill(Color.WHITE);
+            s.setStyle("-fx-font-size: 18px;");
+            leaderboardList.getChildren().add(s);
+        }
+        leaderMenu.setVisible(true);
+    }
+
+    public void closeLeaderboard() {
+        leaderMenu.setVisible(false);
+        gamePanel.requestFocus();
+    }
+
+
 }
