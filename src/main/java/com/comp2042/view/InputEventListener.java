@@ -13,4 +13,8 @@ public interface InputEventListener {
     void createNewGame();
 
     boolean onGhostCheck(ViewData brick);
+
+    DownData onHardDrop(ViewData brick);
+
+    ViewData getCurrentBrick();
 }

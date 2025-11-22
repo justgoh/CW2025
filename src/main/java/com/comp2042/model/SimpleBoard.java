@@ -127,4 +127,14 @@ public class SimpleBoard implements Board {
         brickOffset = new Point(4, 0);
         createNewBrick();
     }
+
+    public ClearRow hardDropBrick() {
+        while (!MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y + 1)) {
+            brickOffset.translate(0, 1);
+        }
+
+        mergeBrickToBackground();
+
+        return clearRows();
+    }
 }

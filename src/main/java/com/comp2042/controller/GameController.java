@@ -102,4 +102,21 @@ public class GameController implements InputEventListener {
 
         return false;
     }
+
+    @Override
+    public DownData onHardDrop(ViewData brick) {
+        ClearRow clearRow = gameBoard.hardDropBrick();
+        boolean collision = gameBoard.createNewBrick();
+
+        if (collision) {
+            guiController.gameOver();
+        }
+        guiController.refreshGameBackground(gameBoard.getBoardMatrix());
+        return new DownData(clearRow, gameBoard.getViewData());
+    }
+
+    @Override
+    public ViewData getCurrentBrick() {
+        return gameBoard.getViewData();
+    }
 }
