@@ -4,14 +4,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 <Pane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.comp2042.controller.GuiController">
-    <GridPane fx:id="brickPanel" hgap="1" vgap="1"/>
+    <GridPane fx:id="brickPanel"/>
     <BorderPane fx:id="gameBoard" styleClass="gameBoard">
         <center>
-            <GridPane fx:id="gamePanel" hgap="1" layoutX="40" layoutY="30" vgap="1"/>
+            <GridPane fx:id="gamePanel" layoutX="40" layoutY="30"/>
         </center>
     </BorderPane>
 
@@ -32,19 +31,13 @@
             <Button fx:id="restartButton" mnemonicParsing="false" onAction="#restartGame" text="Restart"/>
         </children>
     </VBox>
-    <VBox fx:id="leaderMenu" alignment="CENTER" prefHeight="300.0" prefWidth="250.0" spacing="15.0" layoutX="100"
-          layoutY="50" visible="false"
-          style="-fx-background-color: rgba(51,51,51,0.8); -fx-background-radius:15; -fx-padding: 10;">
+    <VBox fx:id="leaderMenu" alignment="CENTER" prefHeight="300.0" prefWidth="200.0" visible="false" layoutX="50"
+          layoutY="50" spacing="15"
+          style="-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 10px -fx-padding: 10px">
         <children>
-            <Button fx:id="closeLeaderboardButton" mnemonicParsing="false" onAction="#closeLeaderboard" text="Close"
-                    style="-fx-background-color: #ff5555; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 10;"/>
-            <Label text="Leaderboard" textFill="white">
-                <font>
-                    <Font name="System Bold" size="36.0"/>
-                </font>
-            </Label>
-            <VBox fx:id="leaderboardList" alignment="CENTER" prefHeight="200.0" prefWidth="200.0" spacing="8.0"
-                  style="-fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 15; -fx-padding: 10;"/>
+            <Button fx:id="closeLeaderboardButton" mnemonicParsing="false" onAction="#closeLeaderboard" text="Close"/>
+            <Label text="Leaderboard" textFill="BEIGE" style="-fx-font-size: 36px; -fx-font-weight: bold"/>
+            <VBox fx:id="leaderboardList" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0"/>
         </children>
     </VBox>
     <Button fx:id="leaderboardButton" layoutX="219.0" layoutY="97.0" mnemonicParsing="false" onAction="#showLeaderboard"

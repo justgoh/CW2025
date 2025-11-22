@@ -34,7 +34,6 @@ public class GameController implements InputEventListener {
             }
             if (gameBoard.createNewBrick()) {
                 int currentScore = gameBoard.getScore().getScore();
-                int savedHighScore = highScoreManager.loadHighScore();
 
                 highScoreManager.addScore(currentScore);
 
@@ -77,5 +76,30 @@ public class GameController implements InputEventListener {
         guiController.refreshGameBackground(gameBoard.getBoardMatrix());
 
         guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
+    }
+
+    @Override
+    public boolean onGhostCheck(ViewData brick) {
+        int[][] matrix = gameBoard.getBoardMatrix();
+        int[][] brickData = brick.getBrickData();
+        int xPos = brick.getxPosition();
+        int yPos = brick.getyPosition();
+
+        for (int row = 0; row < brickData.length; row++) {
+            for (int column = 0; column < brickData[row].length; column++) {
+                if (brickData[row][column] == 0) continue;
+                int boardRow = yPos + row;
+                int boardColumn = xPos + column;
+
+                if (boardRow < 0 || boardRow >= matrix.length || boardColumn < 0 || boardColumn >= matrix[0].length)
+                    return true;
+
+                if (matrix[boardRow][boardColumn] != 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
