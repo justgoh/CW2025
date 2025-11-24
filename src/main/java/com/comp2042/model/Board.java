@@ -1,5 +1,6 @@
 package com.comp2042.model;
 
+import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.view.ViewData;
 
 public interface Board {
@@ -27,4 +28,6 @@ public interface Board {
     void newGame();
 
     ClearRow hardDropBrick();
+
+    BrickGenerator getBrickGenerator();
 }

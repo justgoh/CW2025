@@ -137,4 +137,9 @@ public class SimpleBoard implements Board {
 
         return clearRows();
     }
+
+    @Override
+    public BrickGenerator getBrickGenerator() {
+        return brickGenerator;
+    }
 }

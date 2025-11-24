@@ -1,5 +1,7 @@
 package com.comp2042.view;
 
+import java.util.List;
+
 public interface InputEventListener {
 
     DownData onDownEvent(MoveEvent event);
@@ -17,4 +19,6 @@ public interface InputEventListener {
     DownData onHardDrop(ViewData brick);
 
     ViewData getCurrentBrick();
+
+    List<int[][]> getNextPieces(int count);
 }

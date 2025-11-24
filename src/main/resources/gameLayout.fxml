@@ -42,6 +42,27 @@
     </VBox>
     <Button fx:id="leaderboardButton" layoutX="219.0" layoutY="97.0" mnemonicParsing="false" onAction="#showLeaderboard"
             text="Leaderboard"/>
+    <VBox alignment="TOP_CENTER" spacing="10" layoutX="224" layoutY="120">
+        <Label text="Next" textFill="white" style=" -fx-font-size:16px; -fx-font-weight:bold;"/>
+
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="1st" textFill="lightgray" style="-fx-font-size:12px"/>
+            <GridPane fx:id="nextPiecePanel1"
+                      style="-fx-border-color: #555; -fx-border-width:1; -fx-border-radius: 3;"/>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="2nd" textFill="lightgray" style="-fx-font-size:12px"/>
+            <GridPane fx:id="nextPiecePanel2"
+                      style="-fx-border-color: #555; -fx-border-width:1; -fx-border-radius: 3;"/>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="3rd" textFill="lightgray" style="-fx-font-size:12px"/>
+            <GridPane fx:id="nextPiecePanel3"
+                      style="-fx-border-color: #555; -fx-border-width:1; -fx-border-radius: 3;"/>
+        </VBox>
+    </VBox>
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

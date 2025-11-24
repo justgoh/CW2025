@@ -1,10 +1,15 @@
 package com.comp2042.controller;
 
+import com.comp2042.logic.bricks.Brick;
+import com.comp2042.logic.bricks.RandomBrickGenerator;
 import com.comp2042.model.Board;
 import com.comp2042.model.ClearRow;
 import com.comp2042.model.HighScoreManager;
 import com.comp2042.model.SimpleBoard;
 import com.comp2042.view.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameController implements InputEventListener {
 
@@ -118,5 +123,17 @@ public class GameController implements InputEventListener {
     @Override
     public ViewData getCurrentBrick() {
         return gameBoard.getViewData();
+    }
+
+    @Override
+    public List<int[][]> getNextPieces(int count) {
+        List<Brick> nextBricks = ((RandomBrickGenerator) gameBoard.getBrickGenerator()).getNextBricks(count);
+        List<int[][]> nextPiecesData = new ArrayList<>();
+
+        for (Brick brick : nextBricks) {
+            nextPiecesData.add(brick.getShapeMatrix().get(0));
+
+        }
+        return nextPiecesData;
     }
 }

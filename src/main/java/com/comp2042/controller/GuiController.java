@@ -79,9 +79,14 @@ public class GuiController implements Initializable {
     @FXML
     private Button closeLeaderboardButton;
 
-    private Rectangle[][] displayMatrix;
-    private Rectangle[][] rectangles;
-    private Rectangle[][] ghostRectangles;
+    @FXML
+    private GridPane nextPiecePanel1;
+
+    @FXML
+    private GridPane nextPiecePanel2;
+
+    @FXML
+    private GridPane nextPiecePanel3;
 
     private InputEventListener eventListener;
 
@@ -92,6 +97,14 @@ public class GuiController implements Initializable {
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
     private Score score = new Score();
+
+    private Rectangle[][] displayMatrix;
+
+    private Rectangle[][] rectangles;
+
+    private Rectangle[][] ghostRectangles;
+
+    private Rectangle[][][] nextPieceRectangles;
 
 
     @Override
@@ -147,6 +160,7 @@ public class GuiController implements Initializable {
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
+        initializeNextPiecePreview();
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -236,6 +250,7 @@ public class GuiController implements Initializable {
         if (!isPause.getValue()) {
             updateBrickPosition(brick);
             updateGhost(brick);
+            updateNextPiecesFromGenerator();
         }
     }
 
@@ -399,4 +414,80 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+    private void initializeNextPiecePreview() {
+        nextPieceRectangles = new Rectangle[3][][];
+
+        GridPane[] previewPanels = {nextPiecePanel1, nextPiecePanel2, nextPiecePanel3};
+        for (int panelIndex = 0; panelIndex < previewPanels.length; panelIndex++) {
+            GridPane panel = previewPanels[panelIndex];
+            panel.getChildren().clear();
+
+            Rectangle[][] panelRectangles = new Rectangle[4][4];
+            for (int row = 0; row < 4; row++) {
+                for (int column = 0; column < 4; column++) {
+                    Rectangle rectangle = new Rectangle(BRICK_SIZE - 2, BRICK_SIZE - 2);
+                    rectangle.setFill(Color.TRANSPARENT);
+                    rectangle.setArcWidth(5);
+                    rectangle.setArcHeight(5);
+                    panelRectangles[row][column] = rectangle;
+                    panel.add(rectangle, column, row);
+                }
+            }
+            nextPieceRectangles[panelIndex] = panelRectangles;
+            panel.setHgap(1);
+            panel.setVgap(1);
+            panel.setPadding(new Insets(5));
+        }
+    }
+
+    public void updateNextPieces(List<int[][]> nextBrickDataList) {
+        for (int i = 0; i < 3; i++) {
+            if (i < nextBrickDataList.size()) {
+                updateNextPiecePreview(i, nextBrickDataList.get(i));
+            } else {
+                clearNextPiecePreview(i);
+            }
+        }
+    }
+
+    private void updateNextPiecePreview(int previewIndex, int[][] brickData) {
+        Rectangle[][] previewRectangles = nextPieceRectangles[previewIndex];
+
+        for (int row = 0; row < 4; row++) {
+            for (int column = 0; column < 4; column++) {
+                previewRectangles[row][column].setFill(Color.TRANSPARENT);
+            }
+        }
+        int startRow = (4 - brickData.length) / 2;
+        int startColumn = (4 - brickData[0].length) / 2;
+
+        for (int row = 0; row < brickData.length; row++) {
+            for (int column = 0; column < brickData[row].length; column++) {
+                if (brickData[row][column] != 0) {
+                    int previewRow = startRow + row;
+                    int previewColumn = startColumn + column;
+                    if (previewRow >= 0 && previewRow < 4 && previewColumn >= 0 && previewColumn < 4) {
+                        previewRectangles[previewRow][previewColumn].setFill(getFillColor(brickData[row][column]));
+                    }
+                }
+            }
+        }
+    }
+
+    private void clearNextPiecePreview(int previewIndex) {
+        Rectangle[][] previewRectangles = nextPieceRectangles[previewIndex];
+        for (int row = 0; row < 4; row++) {
+            for (int column = 0; column < 4; column++) {
+                previewRectangles[row][column].setFill(Color.TRANSPARENT);
+            }
+        }
+    }
+
+    private void updateNextPiecesFromGenerator() {
+        if (eventListener != null) {
+            List<int[][]> nextPieces = eventListener.getNextPieces(3);
+            updateNextPieces(nextPieces);
+        }
+    }
 }
+
