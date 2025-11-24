@@ -21,4 +21,8 @@ public interface InputEventListener {
     ViewData getCurrentBrick();
 
     List<int[][]> getNextPieces(int count);
+
+    boolean onHoldEvent();
+
+    int[][] getHoldPiece();
 }

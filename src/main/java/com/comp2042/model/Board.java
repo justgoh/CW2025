@@ -1,5 +1,6 @@
 package com.comp2042.model;
 
+import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.view.ViewData;
 
@@ -30,4 +31,12 @@ public interface Board {
     ClearRow hardDropBrick();
 
     BrickGenerator getBrickGenerator();
+
+    void setCurrentBrick(Brick brick);
+
+    Brick getCurrentBrick();
+
+    void resetBrickPosition();
+
+    boolean checkCollision();
 }

@@ -7,6 +7,8 @@ import com.comp2042.model.ClearRow;
 import com.comp2042.model.HighScoreManager;
 import com.comp2042.model.SimpleBoard;
 import com.comp2042.view.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +21,18 @@ public class GameController implements InputEventListener {
 
     private final HighScoreManager highScoreManager = new HighScoreManager();
 
+    private Brick heldBrick;
+
+    private boolean canHold = true;
+
+    private Brick currentBrick;
+
+    private final BooleanProperty isGameOver = new SimpleBooleanProperty(false);
+
     public GameController(GuiController guiController) {
         this.guiController = guiController;
         gameBoard.createNewBrick();
+        this.currentBrick = gameBoard.getCurrentBrick();
         this.guiController.setEventListener(this);
         this.guiController.initGameView(gameBoard.getBoardMatrix(), gameBoard.getViewData());
         this.guiController.bindScore(gameBoard.getScore().scoreProperty());
@@ -37,6 +48,10 @@ public class GameController implements InputEventListener {
             if (clearRow.getLinesRemoved() > 0) {
                 gameBoard.getScore().add(clearRow.getScoreBonus());
             }
+
+            canHold = true;
+            guiController.setHoldEnabled(true);
+
             if (gameBoard.createNewBrick()) {
                 int currentScore = gameBoard.getScore().getScore();
 
@@ -135,5 +150,54 @@ public class GameController implements InputEventListener {
 
         }
         return nextPiecesData;
+    }
+
+    @Override
+    public boolean onHoldEvent() {
+        if (!canHold || isGameOver.getValue()) {
+            return false;
+        }
+
+        ViewData currentView = gameBoard.getViewData();
+
+        if (heldBrick == null) {
+            heldBrick = currentBrick;
+            if (gameBoard.createNewBrick()) {
+                gameBoard.setCurrentBrick(heldBrick);
+                heldBrick = null;
+                guiController.gameOver();
+                return false;
+            }
+            currentBrick = gameBoard.getCurrentBrick();
+        } else {
+            Brick temp = currentBrick;
+            currentBrick = heldBrick;
+            heldBrick = temp;
+
+            gameBoard.setCurrentBrick(currentBrick);
+            gameBoard.resetBrickPosition();
+
+            if (gameBoard.checkCollision()) {
+                Brick tempSwap = currentBrick;
+                currentBrick = heldBrick;
+                heldBrick = tempSwap;
+                gameBoard.setCurrentBrick(currentBrick);
+                return false;
+            }
+        }
+        canHold = false;
+        guiController.setHoldEnabled(false);
+        guiController.updateHoldPieceDisplay(getHoldPiece());
+        guiController.refreshBrick(gameBoard.getViewData());
+
+        return true;
+    }
+
+    @Override
+    public int[][] getHoldPiece() {
+        if (heldBrick == null) {
+            return null;
+        }
+        return heldBrick.getShapeMatrix().get(0);
     }
 }

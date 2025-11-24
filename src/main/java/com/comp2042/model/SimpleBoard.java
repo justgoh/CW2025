@@ -16,6 +16,7 @@ public class SimpleBoard implements Board {
     private int[][] boardMatrix;
     private Point brickOffset;
     private final Score score;
+    private Brick currentBrick;
 
     public SimpleBoard(int width, int height) {
         this.width = width;
@@ -84,8 +85,8 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        Brick currentBrick = brickGenerator.getBrick();
-        brickRotator.setBrick(currentBrick);
+        Brick newBrick = brickGenerator.getBrick();
+        setCurrentBrick(newBrick);
         brickOffset = new Point(4, 0);
         return MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y);
     }
@@ -141,5 +142,33 @@ public class SimpleBoard implements Board {
     @Override
     public BrickGenerator getBrickGenerator() {
         return brickGenerator;
+    }
+
+    @Override
+    public void setCurrentBrick(Brick brick) {
+        this.currentBrick = brick;
+        if (brick != null) {
+            brickRotator.setBrick(brick);
+        }
+    }
+
+    @Override
+    public Brick getCurrentBrick() {
+        return currentBrick;
+    }
+
+    @Override
+    public void resetBrickPosition() {
+        brickOffset = new Point(4, 0);
+    }
+
+    @Override
+    public boolean checkCollision() {
+        return MatrixOperations.intersect(
+                boardMatrix,
+                brickRotator.getCurrentShape(),
+                brickOffset.x,
+                brickOffset.y
+        );
     }
 }

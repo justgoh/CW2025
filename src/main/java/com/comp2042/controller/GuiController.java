@@ -88,6 +88,12 @@ public class GuiController implements Initializable {
     @FXML
     private GridPane nextPiecePanel3;
 
+    @FXML
+    private GridPane holdPiecePanel;
+
+    @FXML
+    private Button holdButton;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -105,6 +111,8 @@ public class GuiController implements Initializable {
     private Rectangle[][] ghostRectangles;
 
     private Rectangle[][][] nextPieceRectangles;
+
+    private Rectangle[][] holdPieceRectangles;
 
 
     @Override
@@ -161,6 +169,8 @@ public class GuiController implements Initializable {
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
         initializeNextPiecePreview();
+        initializeHoldPiecePanel();
+        setupHoldKeyBinding();
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -246,7 +256,7 @@ public class GuiController implements Initializable {
     }
 
 
-    private void refreshBrick(ViewData brick) {
+    public void refreshBrick(ViewData brick) {
         if (!isPause.getValue()) {
             updateBrickPosition(brick);
             updateGhost(brick);
@@ -487,6 +497,83 @@ public class GuiController implements Initializable {
         if (eventListener != null) {
             List<int[][]> nextPieces = eventListener.getNextPieces(3);
             updateNextPieces(nextPieces);
+        }
+    }
+
+    private void initializeHoldPiecePanel() {
+        holdPiecePanel.getChildren().clear();
+        holdPieceRectangles = new Rectangle[4][4];
+
+        for (int row = 0; row < 4; row++) {
+            for (int column = 0; column < 4; column++) {
+                Rectangle rectangle = new Rectangle(BRICK_SIZE - 2, BRICK_SIZE - 2);
+                rectangle.setFill(Color.TRANSPARENT);
+                rectangle.setArcWidth(5);
+                rectangle.setArcHeight(5);
+                holdPieceRectangles[row][column] = rectangle;
+                holdPiecePanel.add(rectangle, column, row);
+            }
+        }
+        holdPiecePanel.setHgap(1);
+        holdPiecePanel.setVgap(1);
+        holdPiecePanel.setPadding(new Insets(5));
+    }
+
+    private void setupHoldKeyBinding() {
+        gamePanel.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if (isGameOver.getValue() || isPause.getValue()) return;
+            if (keyEvent.getCode() == KeyCode.C || keyEvent.getCode() == KeyCode.SHIFT) {
+                holdPiece(null);
+                keyEvent.consume();
+            }
+        });
+    }
+
+    @FXML
+    public void holdPiece(ActionEvent actionEvent) {
+        if (isGameOver.getValue() || isPause.getValue()) return;
+        if (eventListener != null) {
+            boolean success = eventListener.onHoldEvent();
+            if (success) {
+                int[][] holdPieceData = eventListener.getHoldPiece();
+                updateHoldPieceDisplay(holdPieceData);
+                refreshBrick(eventListener.getCurrentBrick());
+            }
+        }
+        gamePanel.requestFocus();
+    }
+
+    public void updateHoldPieceDisplay(int[][] holdPieceData) {
+        for (int row = 0; row < 4; row++) {
+            for (int column = 0; column < 4; column++) {
+                holdPieceRectangles[row][column].setFill(Color.TRANSPARENT);
+            }
+        }
+        if (holdPieceData != null) {
+            int startRow = (4 - holdPieceData.length) / 2;
+            int startColumn = (4 - holdPieceData[0].length) / 2;
+
+            for (int row = 0; row < holdPieceData.length; row++) {
+                for (int column = 0; column < holdPieceData[row].length; column++) {
+                    if (holdPieceData[row][column] != 0) {
+                        int displayRow = startRow + row;
+                        int displayColumn = startColumn + column;
+                        if (displayRow >= 0 && displayRow < 4 && displayColumn >= 0 && displayColumn < 4) {
+                            holdPieceRectangles[displayRow][displayColumn].setFill(getFillColor(holdPieceData[row][column]));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void setHoldEnabled(boolean enabled) {
+        if (enabled) {
+            holdButton.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: white;");
+            holdButton.setText("Hold (C)");
+        } else {
+            holdButton.setStyle("-fx-background-color: #666666; -fx-text-fill: #999999;");
+            holdButton.setText("Hold Used");
         }
     }
 }
