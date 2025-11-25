@@ -20,8 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -38,7 +38,7 @@ public class GuiController implements Initializable {
     private static final int BRICK_SIZE = 20;
 
     @FXML
-    private BorderPane gameBoard;
+    private StackPane gameBoard;
 
     @FXML
     private GridPane gamePanel;
@@ -200,8 +200,6 @@ public class GuiController implements Initializable {
                 ghost.setOpacity(0.5);
                 ghostRectangles[row][column] = ghost;
                 gamePanel.getChildren().add(ghost);
-                GridPane.setColumnIndex(ghost, 0);
-                GridPane.setRowIndex(ghost, 0);
             }
         }
 
@@ -268,6 +266,7 @@ public class GuiController implements Initializable {
         Point2D gamePanelPos = gamePanel.localToScene(0, 0);
         brickPanel.setLayoutX(gamePanelPos.getX() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(gamePanelPos.getY() + (brick.getyPosition() - 2) * BRICK_SIZE);
+
         for (int row = 0; row < brick.getBrickData().length; row++) {
             for (int column = 0; column < brick.getBrickData()[row].length; column++) {
                 setRectangleData(brick.getBrickData()[row][column], rectangles[row][column]);
@@ -576,5 +575,6 @@ public class GuiController implements Initializable {
             holdButton.setText("Hold Used");
         }
     }
+
 }
 
