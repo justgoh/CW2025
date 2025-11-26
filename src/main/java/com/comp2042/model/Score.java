@@ -22,4 +22,5 @@ public final class Score {
     public int getScore() {
         return score.get();
     }
+
 }

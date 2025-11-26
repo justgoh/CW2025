@@ -49,9 +49,6 @@ public class GuiController implements Initializable {
     private GridPane brickPanel;
 
     @FXML
-    private GameOverPanel gameOverPanel;
-
-    @FXML
     private Label highScoreLabel;
 
     @FXML
@@ -108,6 +105,18 @@ public class GuiController implements Initializable {
     @FXML
     private Button exitButton;
 
+    @FXML
+    private Button restartFromGameOver;
+
+    @FXML
+    private Button mainMenuFromGameOver;
+
+    @FXML
+    private Button backToMenuButton;
+
+    @FXML
+    private Button backToMenuFromPause;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -138,7 +147,6 @@ public class GuiController implements Initializable {
         if (brickPanel != null) brickPanel.setVisible(false);
         if (pauseMenu != null) pauseMenu.setVisible(false);
         if (leaderMenu != null) leaderMenu.setVisible(false);
-        if (gameOverPanel != null) gameOverPanel.setVisible(false);
 
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
@@ -181,7 +189,6 @@ public class GuiController implements Initializable {
                 }
             }
         });
-        gameOverPanel.setVisible(false);
 
         HighScoreManager hsm = new HighScoreManager();
         int highscore = hsm.loadHighScore();
@@ -418,7 +425,9 @@ public class GuiController implements Initializable {
 
     public void gameOver() {
         timeLine.stop();
-        gameOverPanel.setVisible(true);
+        if (groupNotification != null) {
+            groupNotification.setVisible(true);
+        }
         isGameOver.setValue(Boolean.TRUE);
 
         int finalScore = score.getScore();
@@ -439,9 +448,10 @@ public class GuiController implements Initializable {
         if (gameSidebar != null) {
             gameSidebar.setVisible(true);
         }
-
+        if (groupNotification != null) {
+            groupNotification.setVisible(false);
+        }
         timeLine.stop();
-        gameOverPanel.setVisible(false);
         score = new Score();
         bindScore(score.scoreProperty());
         HighScoreManager hsm = new HighScoreManager();
@@ -668,6 +678,31 @@ public class GuiController implements Initializable {
         if (brickPanel != null) brickPanel.setVisible(true);
         newGame(actionEvent);
         gamePanel.requestFocus();
+    }
+
+    @FXML
+    public void backToMainMenu(ActionEvent actionEvent) {
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+        isPause.setValue(Boolean.FALSE);
+        isGameOver.setValue(Boolean.FALSE);
+
+        if (gameBoard != null) gameBoard.setVisible(false);
+        if (gameSidebar != null) gameSidebar.setVisible(false);
+        if (brickPanel != null) brickPanel.setVisible(false);
+        if (pauseMenu != null) pauseMenu.setVisible(false);
+        if (leaderMenu != null) leaderMenu.setVisible(false);
+        if (groupNotification != null) groupNotification.setVisible(false);
+        if (homeMenu != null) homeMenu.setVisible(true);
+
+        if (score != null) {
+            score.reset();
+        }
+
+        HighScoreManager hsm = new HighScoreManager();
+        int highscore = hsm.loadHighScore();
+        highScoreLabel.setText("High Score: " + highscore);
     }
 }
 
