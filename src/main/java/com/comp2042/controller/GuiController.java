@@ -94,9 +94,6 @@ public class GuiController implements Initializable {
     private VBox homeMenu;
 
     @FXML
-    private VBox gameSidebar;
-
-    @FXML
     private Button startButton;
 
     @FXML
@@ -116,6 +113,12 @@ public class GuiController implements Initializable {
 
     @FXML
     private Button backToMenuFromPause;
+
+    @FXML
+    private VBox leftSidebar;
+
+    @FXML
+    private VBox rightSidebar;
 
     private InputEventListener eventListener;
 
@@ -143,7 +146,8 @@ public class GuiController implements Initializable {
 
         if (homeMenu != null) homeMenu.setVisible(true);
         if (gameBoard != null) gameBoard.setVisible(false);
-        if (gameSidebar != null) gameSidebar.setVisible(false);
+        if (leftSidebar != null) leftSidebar.setVisible(false);
+        if (rightSidebar != null) rightSidebar.setVisible(false);
         if (brickPanel != null) brickPanel.setVisible(false);
         if (pauseMenu != null) pauseMenu.setVisible(false);
         if (leaderMenu != null) leaderMenu.setVisible(false);
@@ -445,9 +449,6 @@ public class GuiController implements Initializable {
         if (homeMenu != null) {
             homeMenu.setVisible(false);
         }
-        if (gameSidebar != null) {
-            gameSidebar.setVisible(true);
-        }
         if (groupNotification != null) {
             groupNotification.setVisible(false);
         }
@@ -674,7 +675,8 @@ public class GuiController implements Initializable {
     public void startGame(ActionEvent actionEvent) {
         if (homeMenu != null) homeMenu.setVisible(false);
         if (gameBoard != null) gameBoard.setVisible(true);
-        if (gameSidebar != null) gameSidebar.setVisible(true);
+        if (leftSidebar != null) leftSidebar.setVisible(true);
+        if (rightSidebar != null) rightSidebar.setVisible(true);
         if (brickPanel != null) brickPanel.setVisible(true);
         newGame(actionEvent);
         gamePanel.requestFocus();
@@ -689,7 +691,8 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
 
         if (gameBoard != null) gameBoard.setVisible(false);
-        if (gameSidebar != null) gameSidebar.setVisible(false);
+        if (leftSidebar != null) leftSidebar.setVisible(false);
+        if (rightSidebar != null) rightSidebar.setVisible(false);
         if (brickPanel != null) brickPanel.setVisible(false);
         if (pauseMenu != null) pauseMenu.setVisible(false);
         if (leaderMenu != null) leaderMenu.setVisible(false);
