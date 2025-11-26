@@ -120,6 +120,15 @@ public class GuiController implements Initializable {
     @FXML
     private VBox rightSidebar;
 
+    @FXML
+    private VBox howToPlayMenu;
+
+    @FXML
+    private Button startGameButton;
+
+    @FXML
+    private Button backToMenuFromHowToPlay;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -145,6 +154,7 @@ public class GuiController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         if (homeMenu != null) homeMenu.setVisible(true);
+        if (howToPlayMenu != null) howToPlayMenu.setVisible(false);
         if (gameBoard != null) gameBoard.setVisible(false);
         if (leftSidebar != null) leftSidebar.setVisible(false);
         if (rightSidebar != null) rightSidebar.setVisible(false);
@@ -706,6 +716,24 @@ public class GuiController implements Initializable {
         HighScoreManager hsm = new HighScoreManager();
         int highscore = hsm.loadHighScore();
         highScoreLabel.setText("High Score: " + highscore);
+    }
+
+    @FXML
+    public void showHowToPlay(ActionEvent actionEvent) {
+        if (homeMenu != null) homeMenu.setVisible(false);
+        if (howToPlayMenu != null) howToPlayMenu.setVisible(true);
+    }
+
+    @FXML
+    public void startGameFromHowToPlay(ActionEvent actionEvent) {
+        if (howToPlayMenu != null) howToPlayMenu.setVisible(false);
+        startGame(actionEvent);
+    }
+
+    @FXML
+    public void backToMainMenuFromHowToPlay(ActionEvent actionEvent) {
+        if (howToPlayMenu != null) howToPlayMenu.setVisible(false);
+        if (homeMenu != null) homeMenu.setVisible(true);
     }
 }
 
