@@ -17,11 +17,10 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -129,6 +128,27 @@ public class GuiController implements Initializable {
     @FXML
     private Button backToMenuFromHowToPlay;
 
+    @FXML
+    private VBox themesMenu;
+
+    @FXML
+    private Button themesButton;
+
+    @FXML
+    private Button defaultThemeButton;
+
+    @FXML
+    private Button countrysideButton;
+
+    @FXML
+    private Button beachButton;
+
+    @FXML
+    private Button tronButton;
+
+    @FXML
+    private Button backFromThemesButton;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -149,12 +169,15 @@ public class GuiController implements Initializable {
 
     private Rectangle[][] holdPieceRectangles;
 
+    private String currentTheme = "default";
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         if (homeMenu != null) homeMenu.setVisible(true);
         if (howToPlayMenu != null) howToPlayMenu.setVisible(false);
+        if (themesMenu != null) themesMenu.setVisible(false);
         if (gameBoard != null) gameBoard.setVisible(false);
         if (leftSidebar != null) leftSidebar.setVisible(false);
         if (rightSidebar != null) rightSidebar.setVisible(false);
@@ -734,6 +757,95 @@ public class GuiController implements Initializable {
     public void backToMainMenuFromHowToPlay(ActionEvent actionEvent) {
         if (howToPlayMenu != null) howToPlayMenu.setVisible(false);
         if (homeMenu != null) homeMenu.setVisible(true);
+    }
+
+    @FXML
+    public void showThemes(ActionEvent actionEvent) {
+        if (homeMenu != null) homeMenu.setVisible(false);
+        if (themesMenu != null) themesMenu.setVisible(true);
+    }
+
+    @FXML
+    public void backToMainMenuFromThemes(ActionEvent actionEvent) {
+        if (themesMenu != null) themesMenu.setVisible(false);
+        if (homeMenu != null) homeMenu.setVisible(true);
+    }
+
+    @FXML
+    public void setDefaultTheme(ActionEvent actionEvent) {
+        applyGradientTheme("-fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e);");
+        currentTheme = "default";
+    }
+
+    @FXML
+    public void setCountrysideTheme(ActionEvent actionEvent) {
+        applyImageTheme("countryside_bg.png");
+        currentTheme = "countryside";
+    }
+
+    @FXML
+    public void setBeachTheme(ActionEvent actionEvent) {
+        applyImageTheme("beach_bg.png");
+        currentTheme = "beach";
+    }
+
+    @FXML
+    public void setTronTheme(ActionEvent actionEvent) {
+        applyImageTheme("tron_bg.png");
+        currentTheme = "tron";
+    }
+
+    private void applyImageTheme(String imagePath) {
+        try {
+            Image bgImage = new Image(getClass().getResourceAsStream("/" + imagePath));
+            BackgroundImage backgroundImage = new BackgroundImage(
+                    bgImage,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+            );
+
+            Background background = new Background(backgroundImage);
+
+            Pane rootPane = (Pane) homeMenu.getParent();
+            if (rootPane != null) {
+                rootPane.setBackground(background);
+            }
+
+            if (homeMenu != null) homeMenu.setBackground(background);
+            if (howToPlayMenu != null) howToPlayMenu.setBackground(background);
+            if (themesMenu != null) themesMenu.setBackground(background);
+
+        } catch (Exception e) {
+            System.out.println("Error loading theme image: " + e.getMessage());
+
+            setDefaultTheme(null);
+        }
+
+        backToMainMenuFromThemes(null);
+    }
+
+    private void applyGradientTheme(String gradientStyle) {
+
+        Pane rootPane = (Pane) homeMenu.getParent();
+
+        if (rootPane != null) {
+            rootPane.setStyle(gradientStyle);
+            rootPane.setBackground(null);
+        }
+        if (homeMenu != null) {
+            homeMenu.setStyle(gradientStyle);
+            homeMenu.setBackground(null);
+        }
+        if (howToPlayMenu != null) {
+            howToPlayMenu.setStyle(gradientStyle);
+            howToPlayMenu.setBackground(null);
+        }
+        if (themesMenu != null) {
+            themesMenu.setStyle(gradientStyle);
+            themesMenu.setBackground(null);
+        }
     }
 }
 
