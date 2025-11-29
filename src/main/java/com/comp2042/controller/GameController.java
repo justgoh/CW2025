@@ -25,14 +25,11 @@ public class GameController implements InputEventListener {
 
     private boolean canHold = true;
 
-    private Brick currentBrick;
-
     private final BooleanProperty isGameOver = new SimpleBooleanProperty(false);
 
     public GameController(GuiController guiController) {
         this.guiController = guiController;
         gameBoard.createNewBrick();
-        this.currentBrick = gameBoard.getCurrentBrick();
         this.guiController.setEventListener(this);
         this.guiController.initGameView(gameBoard.getBoardMatrix(), gameBoard.getViewData());
         this.guiController.bindScore(gameBoard.getScore().scoreProperty());
@@ -53,16 +50,10 @@ public class GameController implements InputEventListener {
             guiController.setHoldEnabled(true);
 
             if (gameBoard.createNewBrick()) {
-                int currentScore = gameBoard.getScore().getScore();
-
-                highScoreManager.addScore(currentScore);
-
-                guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
                 guiController.gameOver();
             }
 
             guiController.refreshGameBackground(gameBoard.getBoardMatrix());
-
         } else {
             if (event.getEventSource() == EventSource.USER) {
                 gameBoard.getScore().add(1);
@@ -94,8 +85,11 @@ public class GameController implements InputEventListener {
     public void createNewGame() {
         gameBoard.newGame();
         guiController.refreshGameBackground(gameBoard.getBoardMatrix());
-
         guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
+        heldBrick = null;
+        canHold = true;
+        guiController.setHoldEnabled(true);
+        guiController.updateHoldPieceDisplay(getHoldPiece());
     }
 
     @Override
@@ -126,6 +120,10 @@ public class GameController implements InputEventListener {
     @Override
     public DownData onHardDrop(ViewData brick) {
         ClearRow clearRow = gameBoard.hardDropBrick();
+
+        canHold = true;
+        guiController.setHoldEnabled(true);
+
         boolean collision = gameBoard.createNewBrick();
 
         if (collision) {
@@ -158,30 +156,24 @@ public class GameController implements InputEventListener {
             return false;
         }
 
-        ViewData currentView = gameBoard.getViewData();
+        Brick boardCurrent = gameBoard.getCurrentBrick();
 
         if (heldBrick == null) {
-            heldBrick = currentBrick;
-            if (gameBoard.createNewBrick()) {
-                gameBoard.setCurrentBrick(heldBrick);
-                heldBrick = null;
+            heldBrick = boardCurrent;
+            Brick nextBrick = gameBoard.getBrickGenerator().getBrick();
+            gameBoard.spawnBrick(nextBrick);
+            if (gameBoard.checkCollision()) {
                 guiController.gameOver();
                 return false;
             }
-            currentBrick = gameBoard.getCurrentBrick();
         } else {
-            Brick temp = currentBrick;
-            currentBrick = heldBrick;
-            heldBrick = temp;
-
-            gameBoard.setCurrentBrick(currentBrick);
-            gameBoard.resetBrickPosition();
+            Brick temp = heldBrick;
+            heldBrick = boardCurrent;
+            gameBoard.spawnBrick(temp);
 
             if (gameBoard.checkCollision()) {
-                Brick tempSwap = currentBrick;
-                currentBrick = heldBrick;
-                heldBrick = tempSwap;
-                gameBoard.setCurrentBrick(currentBrick);
+                gameBoard.spawnBrick(boardCurrent);
+                heldBrick = temp;
                 return false;
             }
         }
@@ -189,15 +181,11 @@ public class GameController implements InputEventListener {
         guiController.setHoldEnabled(false);
         guiController.updateHoldPieceDisplay(getHoldPiece());
         guiController.refreshBrick(gameBoard.getViewData());
-
         return true;
     }
 
     @Override
     public int[][] getHoldPiece() {
-        if (heldBrick == null) {
-            return null;
-        }
-        return heldBrick.getShapeMatrix().get(0);
+        return heldBrick == null ? null : heldBrick.getShapeMatrix().get(0);
     }
 }

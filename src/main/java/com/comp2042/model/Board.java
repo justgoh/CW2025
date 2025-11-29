@@ -39,4 +39,6 @@ public interface Board {
     void resetBrickPosition();
 
     boolean checkCollision();
+
+    void spawnBrick(Brick brick);
 }
