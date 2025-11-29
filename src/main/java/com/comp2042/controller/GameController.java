@@ -56,7 +56,9 @@ public class GameController implements InputEventListener {
             guiController.refreshGameBackground(gameBoard.getBoardMatrix());
         } else {
             if (event.getEventSource() == EventSource.USER) {
-                gameBoard.getScore().add(1);
+                javafx.application.Platform.runLater(() -> {
+                    gameBoard.getScore().add(1);
+                });
             }
         }
         return new DownData(clearRow, gameBoard.getViewData());
@@ -84,6 +86,9 @@ public class GameController implements InputEventListener {
     @Override
     public void createNewGame() {
         gameBoard.newGame();
+        gameBoard.getScore().scoreProperty().addListener((obs, oldVal, newVal) -> {
+        });
+        guiController.bindScore(gameBoard.getScore().scoreProperty());
         guiController.refreshGameBackground(gameBoard.getBoardMatrix());
         guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
         heldBrick = null;
@@ -120,6 +125,13 @@ public class GameController implements InputEventListener {
     @Override
     public DownData onHardDrop(ViewData brick) {
         ClearRow clearRow = gameBoard.hardDropBrick();
+
+        int scoreBonus = clearRow.getScoreBonus();
+        if (scoreBonus > 0) {
+            javafx.application.Platform.runLater(() -> {
+                gameBoard.getScore().add(scoreBonus);
+            });
+        }
 
         canHold = true;
         guiController.setHoldEnabled(true);

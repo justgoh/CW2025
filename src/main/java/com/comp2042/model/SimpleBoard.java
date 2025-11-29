@@ -134,13 +134,17 @@ public class SimpleBoard implements Board {
     }
 
     public ClearRow hardDropBrick() {
+        int dropDistance = 0;
         while (!MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y + 1)) {
             brickOffset.translate(0, 1);
+            dropDistance ++;
         }
 
         mergeBrickToBackground();
+        ClearRow clearRow = clearRows();
 
-        return clearRows();
+        int totalBonus = clearRow.getScoreBonus() + dropDistance;
+        return new ClearRow(clearRow.getLinesRemoved(), clearRow.getNewMatrix(), totalBonus);
     }
 
     @Override

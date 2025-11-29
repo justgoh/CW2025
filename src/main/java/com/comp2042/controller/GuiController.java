@@ -1,7 +1,6 @@
 package com.comp2042.controller;
 
 import com.comp2042.model.HighScoreManager;
-import com.comp2042.model.Score;
 import com.comp2042.view.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -149,6 +148,9 @@ public class GuiController implements Initializable {
     @FXML
     private Button backFromThemesButton;
 
+    @FXML
+    private VBox gameOverPanel;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -156,8 +158,6 @@ public class GuiController implements Initializable {
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
-
-    private Score score = new Score();
 
     private Rectangle[][] displayMatrix;
 
@@ -184,6 +184,8 @@ public class GuiController implements Initializable {
         if (brickPanel != null) brickPanel.setVisible(false);
         if (pauseMenu != null) pauseMenu.setVisible(false);
         if (leaderMenu != null) leaderMenu.setVisible(false);
+        if (groupNotification != null) groupNotification.setVisible(false);
+        if (gameOverPanel != null) gameOverPanel.setVisible(false);
 
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
@@ -442,10 +444,8 @@ public class GuiController implements Initializable {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
+                groupNotification.setVisible(true);
 
-                if (score != null) {
-                    score.add(downData.getClearRow().getScoreBonus());
-                }
             }
             refreshBrick(downData.getViewData());
         }
@@ -457,17 +457,20 @@ public class GuiController implements Initializable {
     }
 
     public void bindScore(IntegerProperty scoreProperty) {
+        scoreLabel.textProperty().unbind();
+        scoreLabel.setText(null);
         scoreLabel.textProperty().bind(scoreProperty.asString("Score: %d"));
     }
 
     public void gameOver() {
         timeLine.stop();
-        if (groupNotification != null) {
+        if (groupNotification != null && gameOverPanel != null) {
             groupNotification.setVisible(true);
+            gameOverPanel.setVisible(true);
         }
         isGameOver.setValue(Boolean.TRUE);
 
-        int finalScore = score.getScore();
+        int finalScore = Integer.parseInt(scoreLabel.getText().replace("Score: ", ""));
         HighScoreManager hsm = new HighScoreManager();
         int prevHighScore = hsm.loadHighScore();
 
@@ -485,9 +488,10 @@ public class GuiController implements Initializable {
         if (groupNotification != null) {
             groupNotification.setVisible(false);
         }
+        if (gameOverPanel != null) {
+            gameOverPanel.setVisible(false);
+        }
         timeLine.stop();
-        score = new Score();
-        bindScore(score.scoreProperty());
         HighScoreManager hsm = new HighScoreManager();
         int highscore = hsm.loadHighScore();
         highScoreLabel.setText(("High Score: " + highscore));
@@ -545,7 +549,7 @@ public class GuiController implements Initializable {
             NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
             groupNotification.getChildren().add(notificationPanel);
             notificationPanel.showScore((groupNotification.getChildren()));
-            score.add(downData.getClearRow().getScoreBonus());
+            groupNotification.setVisible(true);
         }
         refreshBrick((downData.getViewData()));
         gamePanel.requestFocus();
@@ -731,10 +735,6 @@ public class GuiController implements Initializable {
         if (leaderMenu != null) leaderMenu.setVisible(false);
         if (groupNotification != null) groupNotification.setVisible(false);
         if (homeMenu != null) homeMenu.setVisible(true);
-
-        if (score != null) {
-            score.reset();
-        }
 
         HighScoreManager hsm = new HighScoreManager();
         int highscore = hsm.loadHighScore();
