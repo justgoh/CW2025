@@ -151,6 +151,12 @@ public class GuiController implements Initializable {
     @FXML
     private VBox gameOverPanel;
 
+    @FXML
+    private Button timeAttackButton;
+
+    @FXML
+    private Label timerLabel;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -171,6 +177,11 @@ public class GuiController implements Initializable {
 
     private String currentTheme = "default";
 
+    private Timeline countdownTimeline;
+
+    private int remainingSeconds = 180;
+
+    private boolean isTimeAttackMode = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -481,6 +492,13 @@ public class GuiController implements Initializable {
     }
 
     public void newGame(ActionEvent actionEvent) {
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
+        }
+
+        if (!isTimeAttackMode && timerLabel != null) {
+            timerLabel.setVisible(false);
+        }
 
         if (homeMenu != null) {
             homeMenu.setVisible(false);
@@ -511,6 +529,15 @@ public class GuiController implements Initializable {
     public void pauseGame(ActionEvent actionEvent) {
         isPause.setValue(!isPause.getValue());
         pauseMenu.setVisible(isPause.getValue());
+
+        if (isTimeAttackMode && countdownTimeline != null) {
+            if (isPause.getValue()) {
+                countdownTimeline.pause();
+            } else {
+                countdownTimeline.play();
+            }
+        }
+
         gamePanel.requestFocus();
     }
 
@@ -724,6 +751,12 @@ public class GuiController implements Initializable {
         if (timeLine != null) {
             timeLine.stop();
         }
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
+        }
+        isTimeAttackMode = false;
+        remainingSeconds = 180;
+
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
 
@@ -739,6 +772,7 @@ public class GuiController implements Initializable {
         HighScoreManager hsm = new HighScoreManager();
         int highscore = hsm.loadHighScore();
         highScoreLabel.setText("High Score: " + highscore);
+        if (timerLabel != null) timerLabel.setVisible(false);
     }
 
     @FXML
@@ -846,6 +880,82 @@ public class GuiController implements Initializable {
             themesMenu.setStyle(gradientStyle);
             themesMenu.setBackground(null);
         }
+    }
+
+    @FXML
+    public void startTimeAttackMode(ActionEvent actionEvent) {
+        isTimeAttackMode = true;
+        remainingSeconds = 180;
+
+        if (homeMenu != null) homeMenu.setVisible(false);
+        if (gameBoard != null) gameBoard.setVisible(true);
+        if (leftSidebar != null) leftSidebar.setVisible(true);
+        if (rightSidebar != null) rightSidebar.setVisible(true);
+        if (brickPanel != null) brickPanel.setVisible(true);
+        if (timerLabel != null) {
+            timerLabel.setVisible(true);
+            updateTimerDisplay();
+        }
+
+        newGame(actionEvent);
+        startCountdown();
+        gamePanel.requestFocus();
+    }
+
+    private void startCountdown() {
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
+        }
+
+        countdownTimeline = new Timeline(new KeyFrame(
+                Duration.seconds(1),
+                event -> {
+                    if (!isPause.getValue()) {
+                        remainingSeconds--;
+                        updateTimerDisplay();
+
+                        if (remainingSeconds <= 0) {
+                            timeUp();
+                        }
+                    }
+                }
+        ));
+        countdownTimeline.setCycleCount(Timeline.INDEFINITE);
+        countdownTimeline.play();
+    }
+
+    private void updateTimerDisplay() {
+        int minutes = remainingSeconds / 60;
+        int seconds = remainingSeconds % 60;
+        timerLabel.setText(String.format("TIME: %d:%02d", minutes, seconds));
+
+        if (remainingSeconds <= 30) {
+            timerLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ff0000;");
+        } else if (remainingSeconds <= 60) {
+            timerLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ffaa00;");
+        } else {
+            timerLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ff6b35;");
+        }
+    }
+
+    private void timeUp() {
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
+        }
+        timeLine.stop();
+
+        if (groupNotification != null && gameOverPanel != null) {
+            groupNotification.setVisible(true);
+            gameOverPanel.setVisible(true);
+        }
+        isGameOver.setValue(Boolean.TRUE);
+
+        int finalScore = Integer.parseInt(scoreLabel.getText().replace("Score: ", ""));
+        HighScoreManager hsm = new HighScoreManager();
+        hsm.addScore(finalScore);
+
+        int currentHighScore = hsm.loadHighScore();
+        highScoreLabel.setText("High Score: " + currentHighScore);
     }
 }
 

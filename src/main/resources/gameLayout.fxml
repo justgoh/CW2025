@@ -16,6 +16,8 @@
         <VBox alignment="CENTER" spacing="20">
             <Button fx:id="startButton" mnemonicParsing="false" onAction="#showHowToPlay" text="START GAME"
                     style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 24px; -fx-padding: 15 40; -fx-font-weight: bold;"/>
+            <Button fx:id="timeAttackButton" mnemonicParsing="false" onAction="#startTimeAttackMode" text="TIME ATTACK"
+                    style="-fx-background-color: #ff6b35; -fx-text-fill: white; -fx-font-size: 24px; -fx-padding: 15 40; -fx-font-weight: bold;"/>
             <Button fx:id="themesButton" mnemonicParsing="false" onAction="#showThemes" text="THEMES"
                     style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 20px; -fx-padding: 12 30;"/>
             <Button fx:id="homeLeaderboardButton" mnemonicParsing="false" onAction="#showLeaderboard" text="LEADERBOARD"
@@ -197,6 +199,8 @@
                        style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
                 <Label fx:id="scoreLabel" text="Score: 0" textFill="#52b49b"
                        style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Label fx:id="timerLabel" text="" textFill="#ff6b35"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold;" visible="false"/>
             </VBox>
         </VBox>
 
