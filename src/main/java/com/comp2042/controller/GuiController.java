@@ -270,6 +270,14 @@ public class GuiController implements Initializable {
         }
         brickPanel.getChildren().clear();
 
+        gamePanel.setMinSize(boardMatrix[0].length * BRICK_SIZE, (boardMatrix.length - 2) * BRICK_SIZE);
+        gamePanel.setMaxSize(boardMatrix[0].length * BRICK_SIZE, (boardMatrix.length - 2) * BRICK_SIZE);
+        gamePanel.setPrefSize(boardMatrix[0].length * BRICK_SIZE, (boardMatrix.length - 2) * BRICK_SIZE);
+
+        Rectangle clip = new Rectangle();
+        clip.setWidth(boardMatrix[0].length * BRICK_SIZE);
+        clip.setHeight((boardMatrix.length - 2) * BRICK_SIZE);
+        gamePanel.setClip(clip);
         rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
         ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
 
@@ -362,12 +370,6 @@ public class GuiController implements Initializable {
 
                 for (int row = 0; row < brick.getBrickData().length; row++) {
                     for (int column = 0; column < brick.getBrickData()[row].length; column++) {
-                        Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                        rectangle.setArcHeight(9);
-                        rectangle.setArcWidth(9);
-                        rectangles[row][column] = rectangle;
-                        gamePanel.getChildren().add(rectangle);
-
                         Rectangle ghost = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                         ghost.setFill(Color.TRANSPARENT);
                         ghost.setStroke(Color.GRAY);
@@ -376,12 +378,28 @@ public class GuiController implements Initializable {
                         ghost.setArcHeight(9);
                         ghost.setArcWidth(9);
                         ghost.setVisible(false);
+                        ghost.setManaged(false);
                         ghostRectangles[row][column] = ghost;
+
+                        Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                        rectangle.setArcHeight(9);
+                        rectangle.setArcWidth(9);
+                        rectangles[row][column] = rectangle;
+                        rectangle.setManaged(false);
+                        gamePanel.getChildren().add(rectangle);
+                    }
+                }
+                for (Rectangle[] ghostRow : ghostRectangles) {
+                    for (Rectangle ghost : ghostRow) {
                         gamePanel.getChildren().add(ghost);
                     }
                 }
+                for (Rectangle[] rectRow : rectangles) {
+                    for (Rectangle rect : rectRow) {
+                        gamePanel.getChildren().add(rect);
+                    }
+                }
             }
-
             updateBrickPosition(brick);
             updateGhost(brick);
             updateNextPiecesFromGenerator();
@@ -397,8 +415,12 @@ public class GuiController implements Initializable {
                 if (brick.getBrickData()[row][column] != 0 && displayRow >= 0) {
                     rectangle.setVisible(true);
                     rectangle.setFill(getFillColor(brick.getBrickData()[row][column]));
-                    GridPane.setColumnIndex(rectangle, brick.getxPosition() + column);
-                    GridPane.setRowIndex(rectangle, displayRow);
+                    rectangle.setTranslateX((brick.getxPosition() + column) * BRICK_SIZE);
+                    rectangle.setTranslateY(displayRow * BRICK_SIZE);
+
+                    rectangle.setStroke(Color.BLACK);
+                    rectangle.setStrokeWidth(0.3);
+                    rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
                 } else {
                     rectangle.setVisible(false);
                 }
@@ -423,8 +445,8 @@ public class GuiController implements Initializable {
 
                 if (brick.getBrickData()[row][column] != 0 && displayRow >= 0) {
                     ghost.setVisible(true);
-                    GridPane.setColumnIndex(ghost, brick.getxPosition() + column);
-                    GridPane.setRowIndex(ghost, displayRow);
+                    ghost.setTranslateX((brick.getxPosition() + column) * BRICK_SIZE);
+                    ghost.setTranslateY(displayRow * BRICK_SIZE);
                     ghost.setFill(Color.TRANSPARENT);
                     ghost.setStroke(Color.GRAY);
                     ghost.setStrokeWidth(1.5);
@@ -448,6 +470,14 @@ public class GuiController implements Initializable {
         rectangle.setFill(getFillColor(color));
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
+        if (color != 0) {
+            rectangle.setStroke(Color.BLACK);
+            rectangle.setStrokeWidth(0.3);
+            rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
+        } else {
+            rectangle.setStroke(Color.TRANSPARENT);
+            rectangle.setStrokeWidth(0);
+        }
     }
 
     private void moveDown(MoveEvent event) {
@@ -878,6 +908,7 @@ public class GuiController implements Initializable {
             themesMenu.setBackground(null);
         }
     }
+
     private void initializeHowToPlayBackground() {
         try {
             Image howToPlayBg = new Image(getClass().getResourceAsStream("/howtoplay.png"));
