@@ -33,6 +33,7 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
+    public Button leaderboardButton;
 
     @FXML
     private StackPane gameBoard;
@@ -251,6 +252,7 @@ public class GuiController implements Initializable {
         initializeNextPiecePreview();
         initializeHoldPiecePanel();
         setupHoldKeyBinding();
+        initializeHowToPlayBackground();
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -848,7 +850,6 @@ public class GuiController implements Initializable {
             }
 
             if (homeMenu != null) homeMenu.setBackground(background);
-            if (howToPlayMenu != null) howToPlayMenu.setBackground(background);
             if (themesMenu != null) themesMenu.setBackground(background);
 
         } catch (Exception e) {
@@ -872,15 +873,27 @@ public class GuiController implements Initializable {
             homeMenu.setStyle(gradientStyle);
             homeMenu.setBackground(null);
         }
-        if (howToPlayMenu != null) {
-            howToPlayMenu.setStyle(gradientStyle);
-            howToPlayMenu.setBackground(null);
-        }
         if (themesMenu != null) {
             themesMenu.setStyle(gradientStyle);
             themesMenu.setBackground(null);
         }
     }
+    private void initializeHowToPlayBackground() {
+        try {
+            Image howToPlayBg = new Image(getClass().getResourceAsStream("/howtoplay.png"));
+            BackgroundImage backgroundImage = new BackgroundImage(
+                    howToPlayBg,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+            );
+            howToPlayMenu.setBackground(new Background(backgroundImage));
+        } catch (Exception e) {
+            System.out.println("Error loading How To Play background: " + e.getMessage());
+        }
+    }
+
 
     @FXML
     public void startTimeAttackMode(ActionEvent actionEvent) {

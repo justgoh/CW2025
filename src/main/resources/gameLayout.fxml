@@ -2,10 +2,9 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <Pane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.comp2042.controller.GuiController" prefWidth="1080" prefHeight="720">
 
@@ -14,7 +13,7 @@
         <Label text="TETRIS"
                style="-fx-text-fill: white; -fx-font-size: 72px; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
         <VBox alignment="CENTER" spacing="20">
-            <Button fx:id="startButton" mnemonicParsing="false" onAction="#showHowToPlay" text="START GAME"
+            <Button fx:id="startButton" mnemonicParsing="false" onAction="#showHowToPlay" text="CLASSIC"
                     style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 24px; -fx-padding: 15 40; -fx-font-weight: bold;"/>
             <Button fx:id="timeAttackButton" mnemonicParsing="false" onAction="#startTimeAttackMode" text="TIME ATTACK"
                     style="-fx-background-color: #ff6b35; -fx-text-fill: white; -fx-font-size: 24px; -fx-padding: 15 40; -fx-font-weight: bold;"/>
@@ -28,14 +27,13 @@
     </VBox>
 
 
-    <VBox fx:id="howToPlayMenu" alignment="CENTER" spacing="20" prefWidth="1080" prefHeight="720" visible="false"
-          style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e);">
+    <VBox fx:id="howToPlayMenu" alignment="CENTER" spacing="20" prefWidth="1080" prefHeight="720" visible="false">
 
         <Label text="HOW TO PLAY" style="-fx-text-fill: white; -fx-font-size: 48px; -fx-font-weight: bold;"/>
 
         <HBox alignment="CENTER" spacing="40" prefWidth="1000" prefHeight="450">
 
-            <VBox alignment="TOP_LEFT" spacing="20" prefWidth="480" style="-fx-padding: 0 20;">
+            <VBox spacing="20" prefWidth="480" style="-fx-padding: 0 20;">
                 <Label text="CONTROLS"
                        style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-underline: true;"/>
                 <GridPane hgap="15" vgap="10">
@@ -90,7 +88,7 @@
                 </VBox>
             </VBox>
 
-            <VBox alignment="TOP_LEFT" spacing="20" prefWidth="480" style="-fx-padding: 0 20;">
+            <VBox spacing="20" prefWidth="480" style="-fx-padding: 0 20;">
                 <Label text="SCORING"
                        style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-underline: true;"/>
                 <VBox spacing="12">
@@ -144,9 +142,8 @@
         <Label text="SELECT THEME" style="-fx-text-fill: white; -fx-font-size: 48px; -fx-font-weight: bold;"/>
 
         <HBox alignment="CENTER" spacing="40" prefWidth="900" prefHeight="400">
-            <!-- Default Theme -->
             <VBox alignment="CENTER" spacing="10">
-                <Label text="Current Theme" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10;"/>
+                <Label text="Default Theme" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10;"/>
                 <Button fx:id="defaultThemeButton" mnemonicParsing="false" onAction="#setDefaultTheme"
                         text="DEFAULT THEME"
                         style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20; -fx-font-weight: bold;"/>
@@ -195,11 +192,11 @@
             <Label text="SCORES" textFill="white"
                    style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-underline: true;"/>
             <VBox alignment="CENTER_LEFT" spacing="12">
-                <Label fx:id="highScoreLabel" text="High Score: 0" textFill="beige"
+                <Label fx:id="highScoreLabel" text="High Score: 0" textFill="darkgoldenrod"
                        style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-                <Label fx:id="scoreLabel" text="Score: 0" textFill="#52b49b"
+                <Label fx:id="scoreLabel" text="Score: 0" textFill="darkgoldenrod"
                        style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-                <Label fx:id="timerLabel" text="" textFill="#ff6b35"
+                <Label fx:id="timerLabel" textFill="#ff6b35"
                        style="-fx-font-size: 28px; -fx-font-weight: bold;" visible="false"/>
             </VBox>
         </VBox>
