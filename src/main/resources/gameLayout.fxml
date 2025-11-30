@@ -54,11 +54,15 @@
 
                     <Label text="SOFT DROP:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
                            GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                    <Label text="↓ / S (+1 point)" style="-fx-text-fill: white; -fx-font-size: 13px;"
+                    <Label text="SOFT DROP:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label text="↓ / S (+1 per row)" style="-fx-text-fill: white; -fx-font-size: 13px;"
                            GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
                     <Label text="HARD DROP:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
                            GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label text="SPACE (+distance)" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="3"
+                           GridPane.columnIndex="1"/>
                     <Label text="SPACE" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="3"
                            GridPane.columnIndex="1"/>
 
@@ -80,11 +84,11 @@
                 </GridPane>
 
                 <Label text="FEATURES"
-                       style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-underline: true;"/>
+                       style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-underline: true;"/>
                 <VBox spacing="5">
-                    <Label text="• Hold Piece" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
-                    <Label text="• Ghost Piece" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
-                    <Label text="• Next 3 Pieces Preview" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
+                    <Label text="• Hold Piece" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold"/>
+                    <Label text="• Ghost Piece" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold"/>
+                    <Label text="• Next 3 Pieces Preview" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold"/>
                 </VBox>
             </VBox>
 
@@ -262,6 +266,8 @@
           spacing="25" visible="false"
           style="-fx-background-color: rgba(0,0,0,0.9); -fx-background-radius: 15; -fx-padding: 30;">
         <Label text="GAME PAUSED" textFill="white" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+        <Button fx:id="resumeButton" mnemonicParsing="false" onAction="#pauseGame" text="RESUME (P)"
+                style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 30; -fx-font-weight: bold;"/>
         <Button fx:id="restartButton" mnemonicParsing="false" onAction="#restartGame" text="RESTART"
                 style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 30;"/>
         <Button fx:id="backToMenuFromPause" mnemonicParsing="false" onAction="#backToMainMenu" text="MAIN MENU"

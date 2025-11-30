@@ -158,6 +158,9 @@ public class GuiController implements Initializable {
     @FXML
     private Label timerLabel;
 
+    @FXML
+    private Button resumeButton;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
