@@ -1,6 +1,7 @@
 package com.comp2042.controller;
 
 import com.comp2042.model.HighScoreManager;
+import com.comp2042.model.HighScoreManager.GameMode;
 import com.comp2042.view.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -12,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,6 +36,7 @@ public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
     public Button leaderboardButton;
+    private GameMode modeToStart = GameMode.CLASSIC;
 
     @FXML
     private StackPane gameBoard;
@@ -161,6 +164,15 @@ public class GuiController implements Initializable {
     @FXML
     private Button resumeButton;
 
+    @FXML
+    private Label modeIndicatorLabel;
+
+    @FXML
+    private Button classicLeaderboardButton;
+
+    @FXML
+    private Button timeAttackLeaderboardButton;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -181,11 +193,7 @@ public class GuiController implements Initializable {
 
     private String currentTheme = "default";
 
-    private Timeline countdownTimeline;
-
-    private int remainingSeconds = 180;
-
-    private boolean isTimeAttackMode = false;
+    private GameController gameController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -201,6 +209,11 @@ public class GuiController implements Initializable {
         if (leaderMenu != null) leaderMenu.setVisible(false);
         if (groupNotification != null) groupNotification.setVisible(false);
         if (gameOverPanel != null) gameOverPanel.setVisible(false);
+        if (timerLabel != null) timerLabel.setVisible(false);
+
+        if (modeIndicatorLabel != null) {
+            updateModeIndicator("Classic");
+        }
 
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
@@ -210,8 +223,7 @@ public class GuiController implements Initializable {
             public void handle(KeyEvent keyEvent) {
                 if (isGameOver.getValue()) return;
                 if (keyEvent.getCode() == KeyCode.P) {
-                    isPause.setValue(!isPause.getValue());
-                    pauseMenu.setVisible(isPause.getValue());
+                    pauseGame(null);
                     keyEvent.consume();
                     return;
                 }
@@ -239,6 +251,10 @@ public class GuiController implements Initializable {
                 }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
+                    keyEvent.consume();
+                }
+                if (keyEvent.getCode() == KeyCode.C || keyEvent.getCode() == KeyCode.SHIFT) {
+                    holdPiece(null);
                     keyEvent.consume();
                 }
             }
@@ -516,24 +532,18 @@ public class GuiController implements Initializable {
         }
         isGameOver.setValue(Boolean.TRUE);
 
-        int finalScore = Integer.parseInt(scoreLabel.getText().replace("Score: ", ""));
-        HighScoreManager hsm = new HighScoreManager();
-        int prevHighScore = hsm.loadHighScore();
+        if (gameController != null) {
+            GameMode currentMode = gameController.getCurrentGameMode();
+            int finalScore = Integer.parseInt(scoreLabel.getText().replace("Score: ", ""));
 
-        hsm.addScore(finalScore);
-
-        int currentHighScore = hsm.loadHighScore();
-        highScoreLabel.setText("High Score: " + currentHighScore);
+            int highScore = gameController.getLeaderboardScores(currentMode, 1).isEmpty() ?
+                    0 : gameController.getLeaderboardScores(currentMode, 1).get(0);
+            highScoreLabel.setText("High Score: " + highScore);
+        }
     }
 
     public void newGame(ActionEvent actionEvent) {
-        if (countdownTimeline != null) {
-            countdownTimeline.stop();
-        }
-
-        if (!isTimeAttackMode && timerLabel != null) {
-            timerLabel.setVisible(false);
-        }
+        timeLine.stop();
 
         if (homeMenu != null) {
             homeMenu.setVisible(false);
@@ -544,10 +554,14 @@ public class GuiController implements Initializable {
         if (gameOverPanel != null) {
             gameOverPanel.setVisible(false);
         }
-        timeLine.stop();
-        HighScoreManager hsm = new HighScoreManager();
-        int highscore = hsm.loadHighScore();
-        highScoreLabel.setText(("High Score: " + highscore));
+
+        if (gameController != null) {
+            GameMode currentMode = gameController.getCurrentGameMode();
+            int highScore = gameController.getLeaderboardScores(currentMode, 1).isEmpty() ?
+                    0 : gameController.getLeaderboardScores(currentMode, 1).get(0);
+            highScoreLabel.setText("High Score: " + highScore);
+        }
+
         eventListener.createNewGame();
         gamePanel.requestFocus();
         timeLine.play();
@@ -558,22 +572,55 @@ public class GuiController implements Initializable {
     }
 
     public void updateHighScoreLabel(int highscore) {
-        highScoreLabel.setText("High Score: " + highscore);
+        if (highScoreLabel != null) {
+            highScoreLabel.setText("High Score: " + highscore);
+        }
     }
 
     public void pauseGame(ActionEvent actionEvent) {
-        isPause.setValue(!isPause.getValue());
-        pauseMenu.setVisible(isPause.getValue());
+        if (isGameOver.getValue()) return;
 
-        if (isTimeAttackMode && countdownTimeline != null) {
-            if (isPause.getValue()) {
-                countdownTimeline.pause();
-            } else {
-                countdownTimeline.play();
+        if (isPause.get()) {
+
+            isPause.set(false);
+            pauseMenu.setVisible(false);
+
+            if (gameController != null) {
+                gameController.resumeGame();
+            }
+
+            if (timeLine != null) {
+                timeLine.play();
+            }
+        } else {
+            isPause.set(true);
+            pauseMenu.setVisible(true);
+
+            if (gameController != null) {
+                gameController.pauseGame();
+            }
+
+            if (timeLine != null) {
+                timeLine.pause();
             }
         }
+        if (gamePanel != null) {
+            gamePanel.requestFocus();
+        }
+    }
 
-        gamePanel.requestFocus();
+    public void pauseGame() {
+        timeLine.pause();
+        if (gameController != null) {
+            gameController.pauseGame();
+        }
+    }
+
+    public void resumeGame() {
+        timeLine.play();
+        if (gameController != null) {
+            gameController.resumeGame();
+        }
     }
 
     public void restartGame(ActionEvent actionEvent) {
@@ -585,19 +632,7 @@ public class GuiController implements Initializable {
     }
 
     public void showLeaderboard() {
-        leaderboardList.getChildren().clear();
-
-        HighScoreManager hsm = new HighScoreManager();
-        List<Integer> topScores = hsm.loadScores();
-
-        for (int i = 0; i < topScores.size(); i++) {
-            Label s = new Label((i + 1) + "." + topScores.get(i));
-            s.setTextFill(Color.WHITE);
-            s.setStyle("-fx-font-size: 18px;");
-            leaderboardList.getChildren().add(s);
-        }
-        leaderMenu.toFront();
-        leaderMenu.setVisible(true);
+        showClassicLeaderboard();
     }
 
     public void closeLeaderboard() {
@@ -783,37 +818,51 @@ public class GuiController implements Initializable {
 
     @FXML
     public void backToMainMenu(ActionEvent actionEvent) {
-        if (timeLine != null) {
-            timeLine.stop();
-        }
-        if (countdownTimeline != null) {
-            countdownTimeline.stop();
-        }
-        isTimeAttackMode = false;
-        remainingSeconds = 180;
-
-        isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE);
-
         if (gameBoard != null) gameBoard.setVisible(false);
         if (leftSidebar != null) leftSidebar.setVisible(false);
         if (rightSidebar != null) rightSidebar.setVisible(false);
         if (brickPanel != null) brickPanel.setVisible(false);
         if (pauseMenu != null) pauseMenu.setVisible(false);
-        if (leaderMenu != null) leaderMenu.setVisible(false);
+        if (howToPlayMenu != null) howToPlayMenu.setVisible(false);
+        if (themesMenu != null) themesMenu.setVisible(false);
         if (groupNotification != null) groupNotification.setVisible(false);
-        if (homeMenu != null) homeMenu.setVisible(true);
+        if (gameOverPanel != null) gameOverPanel.setVisible(false);
+        if (leaderMenu != null) leaderMenu.setVisible(false);
 
-        HighScoreManager hsm = new HighScoreManager();
-        int highscore = hsm.loadHighScore();
-        highScoreLabel.setText("High Score: " + highscore);
-        if (timerLabel != null) timerLabel.setVisible(false);
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+
+        isPause.set(false);
+        isGameOver.set(false);
+
+        if (timerLabel != null) {
+            timerLabel.setVisible(false);
+        }
+
+        if (homeMenu != null) {
+            homeMenu.setVisible(true);
+        }
     }
 
     @FXML
     public void showHowToPlay(ActionEvent actionEvent) {
-        if (homeMenu != null) homeMenu.setVisible(false);
-        if (howToPlayMenu != null) howToPlayMenu.setVisible(true);
+        showHowToPlayInternal();
+    }
+
+    private void showHowToPlayInternal() {
+        homeMenu.setVisible(false);
+        howToPlayMenu.setVisible(true);
+
+        if (startGameButton != null) {
+            if (modeToStart == GameMode.TIME_ATTACK) {
+                startGameButton.setText("START TIME ATTACK");
+                startGameButton.setStyle("-fx-background-color: #ff6b35; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 25; -fx-font-weight: bold;");
+            } else {
+                startGameButton.setText("START CLASSIC");
+                startGameButton.setStyle("-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 25; -fx-font-weight: bold;");
+            }
+        }
     }
 
     @FXML
@@ -824,8 +873,7 @@ public class GuiController implements Initializable {
 
     @FXML
     public void backToMainMenuFromHowToPlay(ActionEvent actionEvent) {
-        if (howToPlayMenu != null) howToPlayMenu.setVisible(false);
-        if (homeMenu != null) homeMenu.setVisible(true);
+        backToMainMenu(actionEvent);
     }
 
     @FXML
@@ -836,8 +884,7 @@ public class GuiController implements Initializable {
 
     @FXML
     public void backToMainMenuFromThemes(ActionEvent actionEvent) {
-        if (themesMenu != null) themesMenu.setVisible(false);
-        if (homeMenu != null) homeMenu.setVisible(true);
+        backToMainMenu(actionEvent);
     }
 
     @FXML
@@ -930,79 +977,163 @@ public class GuiController implements Initializable {
 
 
     @FXML
-    public void startTimeAttackMode(ActionEvent actionEvent) {
-        isTimeAttackMode = true;
-        remainingSeconds = 180;
+    public void showHowToPlayForClassic() {
+        modeToStart = GameMode.CLASSIC;
+        showHowToPlayInternal();
+    }
 
-        if (homeMenu != null) homeMenu.setVisible(false);
-        if (gameBoard != null) gameBoard.setVisible(true);
-        if (leftSidebar != null) leftSidebar.setVisible(true);
-        if (rightSidebar != null) rightSidebar.setVisible(true);
-        if (brickPanel != null) brickPanel.setVisible(true);
+    @FXML
+    public void showHowToPlayForTimeAttack() {
+        modeToStart = GameMode.TIME_ATTACK;
+        showHowToPlayInternal();
+    }
+
+
+    @FXML
+    public void startGameFromHowToPlay() {
+        if (modeToStart == GameMode.TIME_ATTACK) {
+            startTimeAttackMode();
+        } else {
+            startClassicMode();
+        }
+    }
+
+    @FXML
+    public void startClassicMode() {
+        homeMenu.setVisible(false);
+        howToPlayMenu.setVisible(false);
+        themesMenu.setVisible(false);
+
+        leftSidebar.setVisible(true);
+        rightSidebar.setVisible(true);
+        gameBoard.setVisible(true);
+        brickPanel.setVisible(true);
+
+        if (gameController != null) {
+            gameController.startClassicMode();
+            updateModeIndicator("Classic");
+        }
+    }
+
+    @FXML
+    public void startTimeAttackMode() {
+        homeMenu.setVisible(false);
+        howToPlayMenu.setVisible(false);
+        themesMenu.setVisible(false);
+
+        leftSidebar.setVisible(true);
+        rightSidebar.setVisible(true);
+        gameBoard.setVisible(true);
+        brickPanel.setVisible(true);
+
+        if (gameController != null) {
+            gameController.startTimeAttackMode();
+            updateModeIndicator("Time Attack");
+        }
+    }
+
+    private void updateModeIndicator(String mode) {
+        if (modeIndicatorLabel != null) {
+            modeIndicatorLabel.setText("Mode: " + mode);
+
+            if (mode.equals("Time Attack")) {
+                modeIndicatorLabel.setTextFill(javafx.scene.paint.Color.web("#ff6b35"));
+            } else {
+                modeIndicatorLabel.setTextFill(javafx.scene.paint.Color.web("#52b49b"));
+            }
+        }
+    }
+
+    public void updateTimer(int seconds) {
+        if (timerLabel != null) {
+            int minutes = seconds / 60;
+            int secs = seconds % 60;
+            timerLabel.setText(String.format("%02d:%02d", minutes, secs));
+
+            if (seconds <= 30) {
+                timerLabel.setTextFill(javafx.scene.paint.Color.RED);
+            } else if (seconds <= 60) {
+                timerLabel.setTextFill(javafx.scene.paint.Color.ORANGE);
+            } else {
+                timerLabel.setTextFill(javafx.scene.paint.Color.web("#ff6b35"));
+            }
+        }
+    }
+
+    public void showTimer() {
         if (timerLabel != null) {
             timerLabel.setVisible(true);
-            updateTimerDisplay();
         }
-
-        newGame(actionEvent);
-        startCountdown();
-        gamePanel.requestFocus();
     }
 
-    private void startCountdown() {
-        if (countdownTimeline != null) {
-            countdownTimeline.stop();
+    public void hideTimer() {
+        if (timerLabel != null) {
+            timerLabel.setVisible(false);
         }
-
-        countdownTimeline = new Timeline(new KeyFrame(
-                Duration.seconds(1),
-                event -> {
-                    if (!isPause.getValue()) {
-                        remainingSeconds--;
-                        updateTimerDisplay();
-
-                        if (remainingSeconds <= 0) {
-                            timeUp();
-                        }
-                    }
-                }
-        ));
-        countdownTimeline.setCycleCount(Timeline.INDEFINITE);
-        countdownTimeline.play();
     }
 
-    private void updateTimerDisplay() {
-        int minutes = remainingSeconds / 60;
-        int seconds = remainingSeconds % 60;
-        timerLabel.setText(String.format("TIME: %d:%02d", minutes, seconds));
+    @FXML
+    public void showClassicLeaderboard() {
+        if (gameController != null) {
+            List<Integer> scores = gameController.getLeaderboardScores(
+                    GameMode.CLASSIC, 10);
+            displayLeaderboard("CLASSIC LEADERBOARD", scores);
+        }
+    }
 
-        if (remainingSeconds <= 30) {
-            timerLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ff0000;");
-        } else if (remainingSeconds <= 60) {
-            timerLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ffaa00;");
+    @FXML
+    public void showTimeAttackLeaderboard() {
+        if (gameController != null) {
+            List<Integer> scores = gameController.getLeaderboardScores(
+                    GameMode.TIME_ATTACK, 10);
+            displayLeaderboard("TIME ATTACK LEADERBOARD", scores);
+        }
+    }
+
+    private void displayLeaderboard(String title, List<Integer> scores) {
+        leaderboardList.getChildren().clear();
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-text-fill: GOLD; -fx-font-size: 20px; -fx-font-weight: bold;");
+        leaderboardList.getChildren().add(titleLabel);
+
+        if (scores.isEmpty()) {
+            Label noScoresLabel = new Label("No scores yet!");
+            noScoresLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
+            leaderboardList.getChildren().add(noScoresLabel);
         } else {
-            timerLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ff6b35;");
+            for (int i = 0; i < scores.size(); i++) {
+                HBox scoreEntry = new HBox(10);
+                scoreEntry.setAlignment(Pos.CENTER_LEFT);
+                scoreEntry.setPrefWidth(300);
+
+                Label rankLabel = new Label((i + 1) + ".");
+                rankLabel.setStyle("-fx-text-fill: #ffd700; -fx-font-size: 18px; -fx-font-weight: bold;");
+                rankLabel.setMinWidth(30);
+                rankLabel.setAlignment(Pos.CENTER_RIGHT);
+
+                Label scoreLabel = new Label(String.format("%,d", scores.get(i)));
+                scoreLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+
+                scoreEntry.getChildren().addAll(rankLabel, scoreLabel);
+                leaderboardList.getChildren().add(scoreEntry);
+            }
         }
+        leaderMenu.setVisible(true);
     }
 
-    private void timeUp() {
-        if (countdownTimeline != null) {
-            countdownTimeline.stop();
+    public void showGameOver(int score, String mode) {
+        String gameOverText = mode + " Mode\nFinal Score: " + score;
+        groupNotification.setVisible(true);
+    }
+
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
+
+        if (gameController != null) {
+            GameMode currentMode = gameController.getCurrentGameMode();
+            updateModeIndicator(currentMode == GameMode.CLASSIC ? "Classic" : "Time Attack");
         }
-        timeLine.stop();
-
-        if (groupNotification != null && gameOverPanel != null) {
-            groupNotification.setVisible(true);
-            gameOverPanel.setVisible(true);
-        }
-        isGameOver.setValue(Boolean.TRUE);
-
-        int finalScore = Integer.parseInt(scoreLabel.getText().replace("Score: ", ""));
-        HighScoreManager hsm = new HighScoreManager();
-        hsm.addScore(finalScore);
-
-        int currentHighScore = hsm.loadHighScore();
-        highScoreLabel.setText("High Score: " + currentHighScore);
     }
 }
 

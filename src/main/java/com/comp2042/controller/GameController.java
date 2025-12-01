@@ -5,10 +5,14 @@ import com.comp2042.logic.bricks.RandomBrickGenerator;
 import com.comp2042.model.Board;
 import com.comp2042.model.ClearRow;
 import com.comp2042.model.HighScoreManager;
+import com.comp2042.model.HighScoreManager.GameMode;
 import com.comp2042.model.SimpleBoard;
 import com.comp2042.view.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,14 @@ public class GameController implements InputEventListener {
     private final GuiController guiController;
 
     private final HighScoreManager highScoreManager = new HighScoreManager();
+
+    private GameMode currentGameMode = GameMode.CLASSIC;
+
+    private Timeline timeAttackTimer;
+
+    private int timeRemaining = 120;
+
+    private boolean isTimeAttackMode = false;
 
     private Brick heldBrick;
 
@@ -33,6 +45,83 @@ public class GameController implements InputEventListener {
         this.guiController.setEventListener(this);
         this.guiController.initGameView(gameBoard.getBoardMatrix(), gameBoard.getViewData());
         this.guiController.bindScore(gameBoard.getScore().scoreProperty());
+
+        setupTimeAttackTimer();
+    }
+
+    private void setupTimeAttackTimer() {
+        timeAttackTimer = new Timeline(
+                new KeyFrame(Duration.seconds(1), e -> {
+                    if (isTimeAttackMode && timeRemaining > 0) {
+                        timeRemaining--;
+                        guiController.updateTimer(timeRemaining);
+
+                        if (timeRemaining <= 0) {
+                            endTimeAttackGame();
+                        }
+                    }
+                })
+        );
+        timeAttackTimer.setCycleCount(Timeline.INDEFINITE);
+    }
+
+    private void endTimeAttackGame() {
+        timeAttackTimer.stop();
+        isGameOver.set(true);
+        handleGameOver();
+        guiController.gameOver();
+    }
+
+    public void handleGameOver() {
+        if (isGameOver.getValue()) {
+            int finalScore = gameBoard.getScore().getScore();
+
+            highScoreManager.addScore(currentGameMode, finalScore);
+
+            int highScore = highScoreManager.loadHighScore(currentGameMode);
+            guiController.updateHighScoreLabel(highScore);
+
+            String modeText = (currentGameMode == GameMode.CLASSIC) ? "Classic" : "Time Attack";
+            guiController.showGameOver(finalScore, modeText);
+        }
+    }
+
+    public void startClassicMode() {
+        currentGameMode = GameMode.CLASSIC;
+        isTimeAttackMode = false;
+        guiController.hideTimer();
+
+        if (timeAttackTimer != null) {
+            timeAttackTimer.stop();
+        }
+
+        timeRemaining = 120;
+
+        createNewGame();
+    }
+
+    public void startTimeAttackMode() {
+        currentGameMode = GameMode.TIME_ATTACK;
+        isTimeAttackMode = true;
+        guiController.showTimer();
+
+        timeRemaining = 120;
+        guiController.updateTimer(timeRemaining);
+
+        if (timeAttackTimer != null) {
+            timeAttackTimer.play();
+        }
+
+        createNewGame();
+    }
+
+    public HighScoreManager.GameMode getCurrentGameMode() {
+        return currentGameMode;
+    }
+
+    // Add method to get leaderboard for display
+    public List<Integer> getLeaderboardScores(GameMode mode, int count) {
+        return highScoreManager.getTopScores(mode, count);
     }
 
     @Override
@@ -50,6 +139,8 @@ public class GameController implements InputEventListener {
             guiController.setHoldEnabled(true);
 
             if (gameBoard.createNewBrick()) {
+                isGameOver.set(true);
+                handleGameOver();
                 guiController.gameOver();
             }
 
@@ -85,12 +176,27 @@ public class GameController implements InputEventListener {
 
     @Override
     public void createNewGame() {
+        if (timeAttackTimer != null) {
+            timeAttackTimer.stop();
+        }
+
         gameBoard.newGame();
+        int highScore = highScoreManager.loadHighScore(currentGameMode);
+        guiController.updateHighScoreLabel(highScore);
+        isGameOver.set(false);
+        if (currentGameMode == GameMode.TIME_ATTACK) {
+            guiController.showTimer();
+            guiController.updateTimer(timeRemaining);
+            if (timeAttackTimer != null) {
+                timeAttackTimer.play();
+            }
+        } else {
+            guiController.hideTimer();
+        }
         gameBoard.getScore().scoreProperty().addListener((obs, oldVal, newVal) -> {
         });
         guiController.bindScore(gameBoard.getScore().scoreProperty());
         guiController.refreshGameBackground(gameBoard.getBoardMatrix());
-        guiController.updateHighScoreLabel(highScoreManager.loadHighScore());
         heldBrick = null;
         canHold = true;
         guiController.setHoldEnabled(true);
@@ -139,6 +245,8 @@ public class GameController implements InputEventListener {
         boolean collision = gameBoard.createNewBrick();
 
         if (collision) {
+            isGameOver.set(true);
+            handleGameOver();
             guiController.gameOver();
         }
         guiController.refreshGameBackground(gameBoard.getBoardMatrix());
@@ -175,6 +283,8 @@ public class GameController implements InputEventListener {
             Brick nextBrick = gameBoard.getBrickGenerator().getBrick();
             gameBoard.spawnBrick(nextBrick);
             if (gameBoard.checkCollision()) {
+                isGameOver.set(true);
+                handleGameOver();
                 guiController.gameOver();
                 return false;
             }
@@ -199,5 +309,17 @@ public class GameController implements InputEventListener {
     @Override
     public int[][] getHoldPiece() {
         return heldBrick == null ? null : heldBrick.getShapeMatrix().get(0);
+    }
+
+    public void pauseGame() {
+        if (timeAttackTimer != null && isTimeAttackMode) {
+            timeAttackTimer.pause();
+        }
+    }
+
+    public void resumeGame() {
+        if (timeAttackTimer != null && isTimeAttackMode) {
+            timeAttackTimer.play();
+        }
     }
 }
