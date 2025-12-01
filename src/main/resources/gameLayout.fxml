@@ -1,26 +1,305 @@
-<?import com.comp2042.view.GameOverPanel?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ToggleButton?>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
 <?import java.net.URL?>
+<Pane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.comp2042.controller.GuiController" prefWidth="1080" prefHeight="720">
 
-<Pane fx:controller="com.comp2042.controller.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
-        <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
-        </center>
-    </BorderPane>
+    <VBox fx:id="homeMenu" alignment="CENTER" spacing="40" prefWidth="1080" prefHeight="720"
+          style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e);">
+        <Label text="TETRIS"
+               style="-fx-text-fill: white; -fx-font-size: 72px; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+        <VBox alignment="CENTER" spacing="20">
+            <Button fx:id="startButton" mnemonicParsing="false" onAction="#showHowToPlayForClassic" text="CLASSIC"
+                    style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 24px; -fx-padding: 15 40; -fx-font-weight: bold;"/>
+            <Button fx:id="timeAttackButton" mnemonicParsing="false" onAction="#showHowToPlayForTimeAttack"
+                    text="TIME ATTACK"
+                    style="-fx-background-color: #ff6b35; -fx-text-fill: white; -fx-font-size: 24px; -fx-padding: 15 40; -fx-font-weight: bold;"/>
+            <Button fx:id="themesButton" mnemonicParsing="false" onAction="#showThemes" text="THEMES"
+                    style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 20px; -fx-padding: 12 30;"/>
+            <Button fx:id="homeLeaderboardButton" mnemonicParsing="false" onAction="#showLeaderboard" text="LEADERBOARD"
+                    style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 20px; -fx-padding: 12 30;"/>
+            <Button fx:id="exitButton" mnemonicParsing="false" onAction="#quitGame" text="EXIT"
+                    style="-fx-background-color: #c43737; -fx-text-fill: white; -fx-font-size: 20px; -fx-padding: 12 30;"/>
+        </VBox>
+    </VBox>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
-        <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
+
+    <VBox fx:id="howToPlayMenu" alignment="CENTER" spacing="20" prefWidth="1080" prefHeight="720" visible="false">
+
+        <Label text="HOW TO PLAY" style="-fx-text-fill: white; -fx-font-size: 48px; -fx-font-weight: bold;"/>
+
+        <HBox alignment="CENTER" spacing="40" prefWidth="1000" prefHeight="450">
+
+            <VBox spacing="20" prefWidth="480" style="-fx-padding: 0 20;">
+                <Label text="CONTROLS"
+                       style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-underline: true;"/>
+                <GridPane hgap="15" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="150"/>
+                        <ColumnConstraints prefWidth="250"/>
+                    </columnConstraints>
+
+                    <Label text="MOVEMENT:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label text="← → / A D" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="0"
+                           GridPane.columnIndex="1"/>
+
+                    <Label text="ROTATION:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label text="↑ / W" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="1"
+                           GridPane.columnIndex="1"/>
+
+                    <Label text="SOFT DROP:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label text="SOFT DROP:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label text="↓ / S (+1 per row)" style="-fx-text-fill: white; -fx-font-size: 13px;"
+                           GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                    <Label text="HARD DROP:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label text="SPACE (+distance)" style="-fx-text-fill: white; -fx-font-size: 13px;"
+                           GridPane.rowIndex="3"
+                           GridPane.columnIndex="1"/>
+                    <Label text="SPACE" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="3"
+                           GridPane.columnIndex="1"/>
+
+                    <Label text="HOLD PIECE:"
+                           style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label text="C / SHIFT" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="4"
+                           GridPane.columnIndex="1"/>
+
+                    <Label text="PAUSE:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                    <Label text="P" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="5"
+                           GridPane.columnIndex="1"/>
+
+                    <Label text="NEW GAME:" style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold;"
+                           GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                    <Label text="N" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="6"
+                           GridPane.columnIndex="1"/>
+                </GridPane>
+
+                <Label text="FEATURES"
+                       style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-underline: true;"/>
+                <VBox spacing="5">
+                    <Label text="• Hold Piece"
+                           style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold"/>
+                    <Label text="• Ghost Piece"
+                           style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold"/>
+                    <Label text="• Next 3 Pieces Preview"
+                           style="-fx-text-fill: #52b49b; -fx-font-size: 14px; -fx-font-weight: bold"/>
+                </VBox>
+            </VBox>
+
+            <VBox spacing="20" prefWidth="480" style="-fx-padding: 0 20;">
+                <Label text="SCORING"
+                       style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-underline: true;"/>
+                <VBox spacing="12">
+                    <Label text="LINE CLEARS"
+                           style="-fx-text-fill: #52b49b; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <GridPane hgap="15" vgap="5">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="100"/>
+                            <ColumnConstraints prefWidth="150"/>
+                        </columnConstraints>
+                        <Label text="1 LINE:" style="-fx-text-fill: white; -fx-font-size: 13px;" GridPane.rowIndex="0"/>
+                        <Label text="50 points" style="-fx-text-fill: #52b49b; -fx-font-size: 14px;"
+                               GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <Label text="2 LINES:" style="-fx-text-fill: white; -fx-font-size: 13px;"
+                               GridPane.rowIndex="1"/>
+                        <Label text="200 points" style="-fx-text-fill: #52b49b; -fx-font-size: 14px;"
+                               GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="3 LINES:" style="-fx-text-fill: white; -fx-font-size: 13px;"
+                               GridPane.rowIndex="2"/>
+                        <Label text="450 points" style="-fx-text-fill: #52b49b; -fx-font-size: 14px;"
+                               GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="4 LINES:" style="-fx-text-fill: white; -fx-font-size: 13px;"
+                               GridPane.rowIndex="3"/>
+                        <Label text="800 points" style="-fx-text-fill: #52b49b; -fx-font-size: 14px;"
+                               GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    </GridPane>
+
+                    <Label text="BONUS:" style="-fx-text-fill: #ffd700; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <Label text="Clear multiple lines for" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
+                    <Label text="massive scores!" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20 0 0 0;">
+            <Button fx:id="backToMenuFromHowToPlay" mnemonicParsing="false" onAction="#backToMainMenuFromHowToPlay"
+                    text="BACK TO MENU"
+                    style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 25;"/>
+            <Button fx:id="startGameButton" mnemonicParsing="false" onAction="#startGameFromHowToPlay" text="START GAME"
+                    style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 25; -fx-font-weight: bold;"/>
+        </HBox>
+    </VBox>
+
+
+    <VBox fx:id="themesMenu" alignment="CENTER" spacing="30" prefWidth="1080" prefHeight="720" visible="false"
+          style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e);">
+
+        <Label text="SELECT THEME" style="-fx-text-fill: white; -fx-font-size: 48px; -fx-font-weight: bold;"/>
+
+        <HBox alignment="CENTER" spacing="40" prefWidth="900" prefHeight="400">
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="Default Theme" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10;"/>
+                <Button fx:id="defaultThemeButton" mnemonicParsing="false" onAction="#setDefaultTheme"
+                        text="DEFAULT THEME"
+                        style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20; -fx-font-weight: bold;"/>
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="10">
+                <ImageView fitWidth="200" fitHeight="150" preserveRatio="true">
+                    <Image url="@countryside_bg.png"/>
+                </ImageView>
+                <Button fx:id="countrysideButton" mnemonicParsing="false" onAction="#setCountrysideTheme"
+                        text="COUNTRYSIDE"
+                        style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20;"/>
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="10">
+                <ImageView fitWidth="200" fitHeight="150" preserveRatio="true">
+                    <Image url="@beach_bg.png"/>
+                </ImageView>
+                <Button fx:id="beachButton" mnemonicParsing="false" onAction="#setBeachTheme" text="BEACH"
+                        style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20;"/>
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="10">
+                <ImageView fitWidth="200" fitHeight="150" preserveRatio="true">
+                    <Image url="@tron_bg.png"/>
+                </ImageView>
+                <Button fx:id="tronButton" mnemonicParsing="false" onAction="#setTronTheme" text="TRON"
+                        style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20;"/>
+            </VBox>
+        </HBox>
+
+        <Button fx:id="backFromThemesButton" mnemonicParsing="false" onAction="#backToMainMenuFromThemes"
+                text="BACK TO MENU"
+                style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 25;"/>
+    </VBox>
+
+    <StackPane fx:id="gameBoard" styleClass="gameBoard" layoutX="340" layoutY="40" prefWidth="200" prefHeight="360">
+        <GridPane fx:id="gamePanel" alignment="CENTER"/>
+    </StackPane>
+
+    <GridPane fx:id="brickPanel" layoutX="360" layoutY="60"/>
+
+    <VBox fx:id="leftSidebar" alignment="TOP_CENTER" spacing="25" layoutX="60" layoutY="60" prefWidth="250"
+          visible="false">
+        <VBox alignment="CENTER" spacing="15">
+            <Label text="SCORES" textFill="white"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-underline: true;"/>
+            <Label fx:id="modeIndicatorLabel" text="Mode: Classic" textFill="#52b49b"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <VBox alignment="CENTER_LEFT" spacing="12">
+                <Label fx:id="highScoreLabel" text="High Score: 0" textFill="darkgoldenrod"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Label fx:id="scoreLabel" text="Score: 0" textFill="darkgoldenrod"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Label fx:id="timerLabel" textFill="#ff6b35"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold;" visible="false"/>
+            </VBox>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="15">
+            <Button fx:id="leaderboardButton" mnemonicParsing="false" onAction="#showLeaderboard" text="LEADERBOARD"
+                    style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 12 25;"/>
+            <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#pauseGame" text="PAUSE (P)"
+                    style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 12 25; -fx-font-weight: bold;"/>
+            <Button fx:id="backToMenuButton" mnemonicParsing="false" onAction="#backToMainMenu" text="MAIN MENU"
+                    style="-fx-background-color: #c43737; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 12 25;"/>
+        </VBox>
+    </VBox>
+
+    <VBox fx:id="rightSidebar" alignment="TOP_CENTER" spacing="25" layoutX="700" layoutY="60" prefWidth="250"
+          visible="false">
+        <VBox alignment="CENTER" spacing="12">
+            <Label text="HOLD" textFill="white"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-underline: true;"/>
+            <GridPane fx:id="holdPiecePanel"
+                      style="-fx-border-color: #555; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 10;"/>
+            <Button fx:id="holdButton" mnemonicParsing="false" onAction="#holdPiece" text="HOLD (C)"
+                    style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 20; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="15">
+            <Label text="NEXT PIECES" textFill="white"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-underline: true;"/>
+            <HBox alignment="CENTER" spacing="8">
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="1st" textFill="lightgray" style="-fx-font-size: 14px;"/>
+                    <GridPane fx:id="nextPiecePanel1"
+                              style="-fx-border-color: #555; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="2nd" textFill="lightgray" style="-fx-font-size: 14px;"/>
+                    <GridPane fx:id="nextPiecePanel2"
+                              style="-fx-border-color: #555; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="3rd" textFill="lightgray" style="-fx-font-size: 14px;"/>
+                    <GridPane fx:id="nextPiecePanel3"
+                              style="-fx-border-color: #555; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <Group fx:id="groupNotification" layoutX="390" layoutY="210" visible="false">
+        <VBox fx:id="gameOverPanel" alignment="CENTER" spacing="20"
+              style="-fx-background-color: rgba(0,0,0,0.9); -fx-background-radius: 15; -fx-padding: 30;">
+            <Label text="GAME OVER" style="-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;"/>
+            <HBox alignment="CENTER" spacing="15">
+                <Button fx:id="restartFromGameOver" mnemonicParsing="false" onAction="#restartGame" text="PLAY AGAIN"
+                        style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20;"/>
+                <Button fx:id="mainMenuFromGameOver" mnemonicParsing="false" onAction="#backToMainMenu" text="MAIN MENU"
+                        style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20;"/>
+            </HBox>
         </VBox>
     </Group>
+
+    <VBox fx:id="pauseMenu" alignment="CENTER" layoutX="390" layoutY="210" prefHeight="300" prefWidth="300"
+          spacing="25" visible="false"
+          style="-fx-background-color: rgba(0,0,0,0.9); -fx-background-radius: 15; -fx-padding: 30;">
+        <Label text="GAME PAUSED" textFill="white" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+        <Button fx:id="resumeButton" mnemonicParsing="false" onAction="#pauseGame" text="RESUME (P)"
+                style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 30; -fx-font-weight: bold;"/>
+        <Button fx:id="restartButton" mnemonicParsing="false" onAction="#restartGame" text="RESTART"
+                style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 30;"/>
+        <Button fx:id="backToMenuFromPause" mnemonicParsing="false" onAction="#backToMainMenu" text="MAIN MENU"
+                style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 30;"/>
+        <Button fx:id="quitButton" mnemonicParsing="false" onAction="#quitGame" text="QUIT"
+                style="-fx-background-color: #c43737; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 30;"/>
+    </VBox>
+
+    <VBox fx:id="leaderMenu" alignment="CENTER" prefHeight="400" prefWidth="400" visible="false" layoutX="340"
+          layoutY="100" spacing="25"
+          style="-fx-background-color: rgba(0,0,0,0.9); -fx-background-radius: 15; -fx-padding: 30;">
+        <Label text="LEADERBOARD" textFill="GOLD" style="-fx-font-size: 32px; -fx-font-weight: bold;"/>
+        <HBox alignment="CENTER" spacing="15">
+            <Button fx:id="classicLeaderboardButton" mnemonicParsing="false"
+                    onAction="#showClassicLeaderboard" text="CLASSIC"
+                    style="-fx-background-color: #23c42a; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 8 20; -fx-font-weight: bold;"/>
+            <Button fx:id="timeAttackLeaderboardButton" mnemonicParsing="false"
+                    onAction="#showTimeAttackLeaderboard" text="TIME ATTACK"
+                    style="-fx-background-color: #ff6b35; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 8 20; -fx-font-weight: bold;"/>
+        </HBox>
+        <VBox fx:id="leaderboardList" alignment="CENTER" prefHeight="200" prefWidth="300" spacing="12"/>
+        <Button fx:id="closeLeaderboardButton" mnemonicParsing="false" onAction="#closeLeaderboard" text="CLOSE"
+                style="-fx-background-color: #c43737; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 12 30;"/>
+    </VBox>
+
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

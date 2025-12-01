@@ -1,5 +1,7 @@
 package com.comp2042.model;
 
+import com.comp2042.logic.bricks.Brick;
+import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.view.ViewData;
 
 public interface Board {
@@ -25,4 +27,18 @@ public interface Board {
     Score getScore();
 
     void newGame();
+
+    ClearRow hardDropBrick();
+
+    BrickGenerator getBrickGenerator();
+
+    void setCurrentBrick(Brick brick);
+
+    Brick getCurrentBrick();
+
+    void resetBrickPosition();
+
+    boolean checkCollision();
+
+    void spawnBrick(Brick brick);
 }

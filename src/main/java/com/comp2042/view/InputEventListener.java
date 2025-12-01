@@ -1,5 +1,7 @@
 package com.comp2042.view;
 
+import java.util.List;
+
 public interface InputEventListener {
 
     DownData onDownEvent(MoveEvent event);
@@ -11,4 +13,16 @@ public interface InputEventListener {
     ViewData onRotateEvent(MoveEvent event);
 
     void createNewGame();
+
+    boolean onGhostCheck(ViewData brick);
+
+    DownData onHardDrop(ViewData brick);
+
+    ViewData getCurrentBrick();
+
+    List<int[][]> getNextPieces(int count);
+
+    boolean onHoldEvent();
+
+    int[][] getHoldPiece();
 }

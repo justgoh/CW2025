@@ -16,6 +16,7 @@ public class SimpleBoard implements Board {
     private int[][] boardMatrix;
     private Point brickOffset;
     private final Score score;
+    private Brick currentBrick;
 
     public SimpleBoard(int width, int height) {
         this.width = width;
@@ -28,10 +29,9 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean moveBrickDown() {
-        int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
         Point newoffset = new Point(brickOffset);
         newoffset.translate(0, 1);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) newoffset.getX(), (int) newoffset.getY());
+        boolean conflict = MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), (int) newoffset.getX(), (int) newoffset.getY());
         if (conflict) {
             return false;
         } else {
@@ -43,10 +43,9 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean moveBrickLeft() {
-        int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
         Point newOffset = new Point(brickOffset);
         newOffset.translate(-1, 0);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) newOffset.getX(), (int) newOffset.getY());
+        boolean conflict = MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), (int) newOffset.getX(), (int) newOffset.getY());
         if (conflict) {
             return false;
         } else {
@@ -57,10 +56,9 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean moveBrickRight() {
-        int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
         Point newOffset = new Point(brickOffset);
         newOffset.translate(1, 0);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) newOffset.getX(), (int) newOffset.getY());
+        boolean conflict = MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), (int) newOffset.getX(), (int) newOffset.getY());
         if (conflict) {
             return false;
         } else {
@@ -71,9 +69,8 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean rotateLeftBrick() {
-        int[][] currentMatrix = MatrixOperations.copy(boardMatrix);
         NextShapeInfo nextrotationShape = brickRotator.getNextShape();
-        boolean conflict = MatrixOperations.intersect(currentMatrix, nextrotationShape.getShape(), (int) brickOffset.getX(), (int) brickOffset.getY());
+        boolean conflict = MatrixOperations.intersect(boardMatrix, nextrotationShape.getShape(), (int) brickOffset.getX(), (int) brickOffset.getY());
         if (conflict) {
             return false;
         } else {
@@ -84,10 +81,20 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        Brick currentBrick = brickGenerator.getBrick();
-        brickRotator.setBrick(currentBrick);
-        brickOffset = new Point(4, 10);
-        return MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), (int) brickOffset.getX(), (int) brickOffset.getY());
+        Brick newBrick = brickGenerator.getBrick();
+        spawnBrick(newBrick);
+        return MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y);
+    }
+
+    public void spawnBrick(Brick brick) {
+        this.currentBrick = brick;
+        brickRotator.setBrick(brick);
+        this.brickOffset = new Point(4, 0);
+    }
+
+    @Override
+    public void resetBrickPosition() {
+        brickOffset = new Point(4, 0);
     }
 
     @Override
@@ -97,12 +104,12 @@ public class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        return new ViewData(brickRotator.getCurrentShape(), (int) brickOffset.getX(), (int) brickOffset.getY(), brickGenerator.getNextBrick().getShapeMatrix().get(0));
+        return new ViewData(brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y, brickGenerator.getNextBrick().getShapeMatrix().get(0));
     }
 
     @Override
     public void mergeBrickToBackground() {
-        boardMatrix = MatrixOperations.merge(boardMatrix, brickRotator.getCurrentShape(), (int) brickOffset.getX(), (int) brickOffset.getY());
+        boardMatrix = MatrixOperations.merge(boardMatrix, brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y);
     }
 
     @Override
@@ -124,5 +131,48 @@ public class SimpleBoard implements Board {
         boardMatrix = new int[width][height];
         score.reset();
         createNewBrick();
+    }
+
+    public ClearRow hardDropBrick() {
+        int dropDistance = 0;
+        while (!MatrixOperations.intersect(boardMatrix, brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y + 1)) {
+            brickOffset.translate(0, 1);
+            dropDistance ++;
+        }
+
+        mergeBrickToBackground();
+        ClearRow clearRow = clearRows();
+
+        int totalBonus = clearRow.getScoreBonus() + dropDistance;
+        return new ClearRow(clearRow.getLinesRemoved(), clearRow.getNewMatrix(), totalBonus);
+    }
+
+    @Override
+    public BrickGenerator getBrickGenerator() {
+        return brickGenerator;
+    }
+
+    @Override
+    public void setCurrentBrick(Brick brick) {
+        this.currentBrick = brick;
+        if (brick != null) {
+            brickRotator.setBrick(brick);
+        }
+    }
+
+    @Override
+    public Brick getCurrentBrick() {
+        return currentBrick;
+    }
+
+
+    @Override
+    public boolean checkCollision() {
+        return MatrixOperations.intersect(
+                boardMatrix,
+                brickRotator.getCurrentShape(),
+                brickOffset.x,
+                brickOffset.y
+        );
     }
 }

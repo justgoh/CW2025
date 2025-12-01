@@ -10,16 +10,19 @@ public class MatrixOperations {
 
 
     //We don't want to instantiate this utility class
-    private MatrixOperations(){
+    private MatrixOperations() {
 
     }
 
     public static boolean intersect(final int[][] boardMatrix, final int[][] brickmatrix, int columnoffset, int rowoffset) {
         for (int row = 0; row < brickmatrix.length; row++) {
             for (int column = 0; column < brickmatrix[row].length; column++) {
+                if (brickmatrix[row][column] == 0) {
+                    continue;
+                }
                 int boardcolumn = columnoffset + column;
                 int boardrow = rowoffset + row;
-                if (brickmatrix[column][row] != 0 && (isOutOfBound(boardMatrix, boardcolumn, boardrow) || boardMatrix[boardrow][boardcolumn] != 0)) {
+                if ((isOutOfBound(boardMatrix, boardcolumn, boardrow) || boardMatrix[boardrow][boardcolumn] != 0)) {
                     return true;
                 }
             }
@@ -28,11 +31,7 @@ public class MatrixOperations {
     }
 
     private static boolean isOutOfBound(int[][] boardMatrix, int column, int row) {
-        boolean outofbound = true;
-        if (column >= 0 && row < boardMatrix.length && column < boardMatrix[row].length) {
-            outofbound = false;
-        }
-        return outofbound;
+        return row < 0 || row >= boardMatrix.length || column < 0 || column >= boardMatrix[0].length;
     }
 
     public static int[][] copy(int[][] originalmatrix) {
@@ -51,8 +50,8 @@ public class MatrixOperations {
             for (int column = 0; column < brickmatrix[row].length; column++) {
                 int boardcolumn = columnoffset + column;
                 int boardrow = rowoffset + row;
-                if (brickmatrix[column][row] != 0) {
-                    mergedmatrix[boardrow][boardcolumn] = brickmatrix[column][row];
+                if (brickmatrix[row][column] != 0) {
+                    mergedmatrix[boardrow][boardcolumn] = brickmatrix[row][column];
                 }
             }
         }
@@ -91,7 +90,7 @@ public class MatrixOperations {
         return new ClearRow(clearedRows.size(), updatedmatrix, scoreBonus);
     }
 
-    public static List<int[][]> deepCopyList(List<int[][]> list){
+    public static List<int[][]> deepCopyList(List<int[][]> list) {
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }
 
