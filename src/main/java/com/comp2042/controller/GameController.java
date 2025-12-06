@@ -1,6 +1,5 @@
 package com.comp2042.controller;
 
-import com.comp2042.constants.GameConstants;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.model.Board;
 import com.comp2042.model.ClearRow;
@@ -18,39 +17,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controls the game logic and manages interaction between the model and view.
- * Handles game modes (Classic and Time Attack), scoring, piece generation, and game state transitions.
+ * Central controller responsible for handling game logic, state transitions,
+ * and communication between the model ({@link Board}) and the GUI layer
+ * ({@link GuiController}).
+ * <p>
+ * This controller manages:
+ * <ul>
+ *     <li>Piece movement and collision handling</li>
+ *     <li>Row clearing and score updates</li>
+ *     <li>Game mode behavior (Classic and Time Attack)</li>
+ *     <li>Hold and preview piece systems</li>
+ *     <li>Game-over conditions and leaderboard updates</li>
+ * </ul>
+ * It receives input events via {@link InputEventListener} and updates the
+ * GUI based on the current game state.
  */
- public class GameController implements InputEventListener {
+public class GameController implements InputEventListener {
 
-    /** The game board managing piece placement and collision detection */
     private final Board gameBoard = new SimpleBoard(25, 10);
 
-    /** Reference to the GUI controller for view updates */
     private final GuiController guiController;
 
-    /** Manager for high scores and leaderboards */
     private final HighScoreManager highScoreManager = new HighScoreManager();
 
-    /** Current game mode (Classic or Time Attack) */
     private GameMode currentGameMode = GameMode.CLASSIC;
 
-    /** Timer for Time Attack mode */
     private Timeline timeAttackTimer;
 
-    /** Time remaining in seconds for Time Attack mode */
     private int timeRemaining = 120;
 
-    /** Flag indicating if Time Attack mode is active */
     private boolean isTimeAttackMode = false;
 
-    /** The piece currently held by the player */
     private Brick heldBrick;
 
-    /** Flag indicating if the hold feature can be used */
     private boolean canHold = true;
 
-    /** Property tracking game over state */
     private final BooleanProperty isGameOver = new SimpleBooleanProperty(false);
 
     /**
@@ -158,7 +159,7 @@ import java.util.List;
     /**
      * Gets the top scores for a specific game mode.
      *
-     * @param mode the GameMode to get scores for
+     * @param mode  the GameMode to get scores for
      * @param count the maximum number of scores to return
      * @return a list of top scores in descending order
      */
@@ -196,9 +197,7 @@ import java.util.List;
             guiController.refreshGameBackground(gameBoard.getBoardMatrix());
         } else {
             if (event.getEventSource() == EventSource.USER) {
-                javafx.application.Platform.runLater(() -> {
-                    gameBoard.getScore().add(1);
-                });
+                javafx.application.Platform.runLater(() -> gameBoard.getScore().add(1));
             }
         }
         return new DownData(clearRow, gameBoard.getViewData());
@@ -325,9 +324,7 @@ import java.util.List;
 
         int scoreBonus = clearRow.getScoreBonus();
         if (scoreBonus > 0) {
-            javafx.application.Platform.runLater(() -> {
-                gameBoard.getScore().add(scoreBonus);
-            });
+            javafx.application.Platform.runLater(() -> gameBoard.getScore().add(scoreBonus));
         }
 
         canHold = true;
@@ -366,7 +363,7 @@ import java.util.List;
         List<int[][]> nextPiecesData = new ArrayList<>();
 
         for (Brick brick : nextBricks) {
-            nextPiecesData.add(brick.getShapeMatrix().get(0));
+            nextPiecesData.add(brick.getShapeMatrix().getFirst());
 
         }
         return nextPiecesData;
@@ -421,7 +418,7 @@ import java.util.List;
      */
     @Override
     public int[][] getHoldPiece() {
-        return heldBrick == null ? null : heldBrick.getShapeMatrix().get(0);
+        return heldBrick == null ? null : heldBrick.getShapeMatrix().getFirst();
     }
 
     /**

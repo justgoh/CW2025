@@ -42,7 +42,7 @@ public final class ViewData {
 
     /**
      * Gets a copy of the current piece's shape data.
-     *
+     * <p>
      * @return a defensive copy of the brick matrix
      */
     public int[][] getBrickData() {
@@ -51,7 +51,7 @@ public final class ViewData {
 
     /**
      * Gets the horizontal position of the current piece.
-     *
+     * <p>
      * @return the x-coordinate (column) on the board
      */
     public int getxPosition() {
@@ -60,20 +60,11 @@ public final class ViewData {
 
     /**
      * Gets the vertical position of the current piece.
-     *
+     * <p>
      * @return the y-coordinate (row) on the board
      */
     public int getyPosition() {
         return yPosition;
-    }
-
-    /**
-     * Gets a copy of the next piece's shape data.
-     *
-     * @return a defensive copy of the next brick matrix
-     */
-    public int[][] getNextBrickData() {
-        return MatrixOperations.copy(nextBrickData);
     }
 
     /**

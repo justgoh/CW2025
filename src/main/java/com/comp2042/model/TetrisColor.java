@@ -6,8 +6,8 @@ import javafx.scene.paint.Paint;
 /**
  * Enum representing Tetris piece colors with their corresponding color codes.
  * Each Tetris piece type has a unique color identified by a numeric code (0-7).
- *
- * <p>Color codes mapping:
+ * <p>
+ * <b>Color codes mapping:</b>
  * <ul>
  *   <li>0 - EMPTY (Transparent)</li>
  *   <li>1 - CYAN (I-piece)</li>
@@ -18,9 +18,7 @@ import javafx.scene.paint.Paint;
  *   <li>6 - BEIGE (L-piece)</li>
  *   <li>7 - BROWN (J-piece)</li>
  * </ul>
- *
  */
-
 public enum TetrisColor {
     /**
      * Empty cell with transparent color
@@ -84,24 +82,6 @@ public enum TetrisColor {
     }
 
     /**
-     * Gets the numeric code for this color.
-     *
-     * @return the color code (0-7)
-     */
-    public int getCode() {
-        return code;
-    }
-
-    /**
-     * Gets the JavaFX Paint object for this color.
-     *
-     * @return the Paint object representing this color
-     */
-    public Paint getColor() {
-        return color;
-    }
-
-    /**
      * Retrieves the Paint color corresponding to a given numeric code.
      * This method is useful for converting color codes stored in the game board
      * matrix into actual colors for rendering.
@@ -118,18 +98,4 @@ public enum TetrisColor {
         return Color.WHITE; // default for unknown codes
     }
 
-    /**
-     * Retrieves the TetrisColor enum constant for a given numeric code.
-     *
-     * @param code the color code (0-7)
-     * @return the corresponding TetrisColor enum, or null if the code is invalid
-     */
-    public static TetrisColor fromCode(int code) {
-        for (TetrisColor tetrisColor : values()) {
-            if (tetrisColor.code == code) {
-                return tetrisColor;
-            }
-        }
-        return null;
-    }
 }

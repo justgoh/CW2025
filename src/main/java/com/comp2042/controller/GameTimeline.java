@@ -7,9 +7,13 @@ import javafx.util.Duration;
 
 /**
  * Manages the game's main timeline for automatic piece dropping.
- * This class encapsulates the JavaFX Timeline that controls the game loop, providing a clean interface for starting, stopping, pausing, and resuming the game's automatic progression.
- * <p>The timeline triggers a callback at regular intervals, causing the current piece to move down automatically. The tick rate can be adjusted to change game difficulty.
- * <p>Features:
+ * <p>
+ * This class encapsulates the JavaFX Timeline that controls the game loop,
+ * providing a clean interface for starting, stopping, pausing, and resuming
+ * the game's automatic progression. The timeline triggers a callback at
+ * regular intervals, causing the current piece to move down automatically.
+ * <p>
+ * <b>Functionality:</b>
  * <ul>
  *   <li>Start and stop the game loop</li>
  *   <li>Pause and resume without losing state</li>
@@ -19,24 +23,12 @@ import javafx.util.Duration;
  */
 public class GameTimeline {
 
-    /**
-     * The JavaFX Timeline that controls game ticks
-     */
     private Timeline timeline;
 
-    /**
-     * The action to execute on each game tick
-     */
     private final Runnable onTick;
 
-    /**
-     * The current tick delay in milliseconds
-     */
-    private int tickDelayMs;
+    private final int tickDelayMs;
 
-    /**
-     * Flag indicating if the timeline is currently running
-     */
     private boolean isRunning;
 
     /**
@@ -116,47 +108,5 @@ public class GameTimeline {
             timeline.play();
             isRunning = true;
         }
-    }
-
-    /**
-     * Checks if the timeline is currently running.
-     * A timeline is considered running if it has been started and not paused or stopped.
-     *
-     * @return true if the timeline is running, false otherwise
-     */
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    /**
-     * Sets a new tick delay and restarts the timeline if it was running.
-     * This allows dynamic adjustment of game speed.
-     *
-     * @param tickDelayMs the new delay between ticks in milliseconds
-     */
-    public void setTickDelay(int tickDelayMs) {
-        this.tickDelayMs = tickDelayMs;
-
-        // Restart timeline if it was running
-        if (isRunning) {
-            start();
-        }
-    }
-
-    /**
-     * Gets the current tick delay.
-     *
-     * @return the delay between ticks in milliseconds
-     */
-    public int getTickDelay() {
-        return tickDelayMs;
-    }
-
-    /**
-     * Restarts the timeline with the current tick delay.
-     * Stops the current timeline and starts a new one.
-     */
-    public void restart() {
-        start();
     }
 }

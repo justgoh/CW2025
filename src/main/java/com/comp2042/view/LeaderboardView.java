@@ -12,7 +12,8 @@ import java.util.List;
  * Handles the display and formatting of leaderboard data.
  * This class is responsible for creating and populating the visual representation of high scores in a structured, readable format.
  *
- * <p>Features:
+ * <p>
+ * <b>Functionality:</b>
  * <ul>
  *   <li>Displays ranked list of scores</li>
  *   <li>Handles empty leaderboard states</li>
@@ -22,9 +23,7 @@ import java.util.List;
  */
 
 public class LeaderboardView {
-    /**
-     * The VBox container for leaderboard entries
-     */
+
     private final VBox leaderboardContainer;
 
     /**
@@ -155,11 +154,4 @@ public class LeaderboardView {
         return scoreLabel;
     }
 
-    /**
-     * Clears all content from the leaderboard container.
-     * Useful for resetting the display before showing new data.
-     */
-    public void clear() {
-        leaderboardContainer.getChildren().clear();
-    }
 }

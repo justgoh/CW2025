@@ -22,7 +22,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
@@ -32,8 +31,14 @@ import java.util.ResourceBundle;
 
 /**
  * Main controller for the Tetris game GUI.
- * This class manages the user interface, handles user input, and coordinates between the view components and game logic. It serves as the central hub for all UI-related operations including menus, gameplay display, and theme management.
- * <p>Key responsibilities:
+ * <p>
+ * This class manages the user interface, handles user input, and coordinates
+ * between the view components and game logic. It serves as the central hub for
+ * all UI-related operations including menus, gameplay display, and theme management.
+ * The controller implements JavaFX's Initializable interface to set up the UI
+ * after FXML components are loaded.
+ * <p>
+ * <b>Functionality:</b>
  * <ul>
  *   <li>Initialize and manage UI components</li>
  *   <li>Handle user input and button actions</li>
@@ -42,10 +47,8 @@ import java.util.ResourceBundle;
  *   <li>Manage game modes (Classic and Time Attack)</li>
  * </ul>
  */
-
 public class GuiController implements Initializable {
 
-    // FXML Components
     @FXML
     private StackPane gameBoard;
     @FXML
@@ -61,17 +64,9 @@ public class GuiController implements Initializable {
     @FXML
     private VBox pauseMenu;
     @FXML
-    private Button restartButton;
-    @FXML
-    private Button quitButton;
-    @FXML
-    private Button pauseButton;
-    @FXML
     private VBox leaderMenu;
     @FXML
     private VBox leaderboardList;
-    @FXML
-    private Button closeLeaderboardButton;
     @FXML
     private GridPane nextPiecePanel1;
     @FXML
@@ -85,20 +80,6 @@ public class GuiController implements Initializable {
     @FXML
     private VBox homeMenu;
     @FXML
-    private Button startButton;
-    @FXML
-    private Button homeLeaderboardButton;
-    @FXML
-    private Button exitButton;
-    @FXML
-    private Button restartFromGameOver;
-    @FXML
-    private Button mainMenuFromGameOver;
-    @FXML
-    private Button backToMenuButton;
-    @FXML
-    private Button backToMenuFromPause;
-    @FXML
     private VBox leftSidebar;
     @FXML
     private VBox rightSidebar;
@@ -107,138 +88,62 @@ public class GuiController implements Initializable {
     @FXML
     private Button startGameButton;
     @FXML
-    private Button backToMenuFromHowToPlay;
-    @FXML
     private VBox themesMenu;
-    @FXML
-    private Button themesButton;
-    @FXML
-    private Button defaultThemeButton;
-    @FXML
-    private Button countrysideButton;
-    @FXML
-    private Button beachButton;
-    @FXML
-    private Button tronButton;
-    @FXML
-    private Button backFromThemesButton;
     @FXML
     private VBox gameOverPanel;
     @FXML
-    private Button timeAttackButton;
-    @FXML
     private Label timerLabel;
-    @FXML
-    private Button resumeButton;
     @FXML
     private Label modeIndicatorLabel;
     @FXML
-    private Button classicLeaderboardButton;
-    @FXML
-    private Button timeAttackLeaderboardButton;
-    @FXML
     public Button leaderboardButton;
 
-    // Helper Classes
-
-    /**
-     * Manages UI component visibility and state transitions
-     */
     private ViewManager viewManager;
 
-    /**
-     * Handles rendering of game pieces
-     */
     private PieceRenderer pieceRenderer;
 
-    /**
-     * Manages application themes
-     */
     private ThemeManager themeManager;
 
-    /**
-     * Handles leaderboard display
-     */
     private LeaderboardView leaderboardView;
 
-    /**
-     * Manages game timeline and automatic piece dropping
-     */
     private GameTimeline gameTimeline;
 
-    /**
-     * Handles keyboard input
-     */
     private GameInputHandler inputHandler;
 
-    // Game State
-
-    /**
-     * Event listener for game logic
-     */
     private InputEventListener eventListener;
 
-    /**
-     * Property tracking pause state
-     */
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
-    /**
-     * Property tracking game over state
-     */
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
-    /**
-     * Reference to the game controller
-     */
     private GameController gameController;
 
-    /**
-     * The game mode to start (Classic or Time Attack)
-     */
     private GameMode modeToStart = GameMode.CLASSIC;
 
-    // Display Components
-
-    /**
-     * 2D array of rectangles representing the game board
-     */
     private Rectangle[][] displayMatrix;
 
-    /**
-     * 2D array of rectangles for the current piece
-     */
     private Rectangle[][] rectangles;
 
-    /**
-     * 2D array of rectangles for the ghost piece
-     */
     private Rectangle[][] ghostRectangles;
 
-    /**
-     * 3D array of rectangles for next piece previews
-     */
     private Rectangle[][][] nextPieceRectangles;
 
-    /**
-     * 2D array of rectangles for the hold piece
-     */
     private Rectangle[][] holdPieceRectangles;
-
-    // Initialization
 
     /**
      * Initializes the controller after FXML components are loaded.
-     * Sets up the initial UI state, creates helper objects, loads high scores,
-     * and configures input handlers.
+     * <p>
+     * Sets up the initial UI state, creates helper objects (ViewManager, PieceRenderer,
+     * ThemeManager, LeaderboardView), loads high scores, configures input handlers,
+     * and initializes all preview panels. This method is automatically called by
+     * JavaFX after the FXML file has been loaded.
      *
-     * @param location  the location used to resolve relative paths
-     * @param resources the resources used to localize the root object
+     * @param location  the location used to resolve relative paths for the root object, or null if unknown
+     * @param resources the resources used to localize the root object, or null if not localized
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        // Initialize view manager
         viewManager = new ViewManager(
                 homeMenu, howToPlayMenu, themesMenu,
                 gameBoard, brickPanel, leftSidebar, rightSidebar,
@@ -246,86 +151,49 @@ public class GuiController implements Initializable {
                 timerLabel
         );
 
-        // Initialize other helpers
         pieceRenderer = new PieceRenderer();
         themeManager = new ThemeManager();
         leaderboardView = new LeaderboardView(leaderboardList);
 
-        // Set initial UI state
         viewManager.showHome();
 
         if (modeIndicatorLabel != null) {
             updateModeIndicator("Classic");
         }
 
-        // Load digital font for score display
-        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        URL fontUrl = getClass().getClassLoader().getResource("digital.ttf");
+        if (fontUrl != null) {
+            Font.loadFont(fontUrl.toExternalForm(), 38);
+        } else {
+            System.err.println("Warning: digital.ttf font file not found, using default font");
+        }
 
-        // Configure game panel for input
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
         gamePanel.setOnKeyPressed(this::handleKeyPress);
 
-        // Load and display high score
         HighScoreManager hsm = new HighScoreManager();
         int highscore = hsm.loadHighScore();
         highScoreLabel.setText("High Score: " + highscore);
 
-        // Setup reflection effect
         final Reflection reflection = new Reflection();
         reflection.setFraction(AnimationConfig.REFLECTION_FRACTION);
         reflection.setTopOpacity(AnimationConfig.REFLECTION_TOP_OPACITY);
         reflection.setTopOffset(AnimationConfig.REFLECTION_TOP_OFFSET);
 
-        // Initialize preview panels
         initializeNextPiecePreview();
         initializeHoldPiecePanel();
         setupHoldKeyBinding();
         initializeHowToPlayBackground();
     }
 
-    // Dependency Injection
-
-    /**
-     * Sets the PieceRenderer for this controller.
-     *
-     * @param pieceRenderer the PieceRenderer to use
-     */
-    public void setPieceRenderer(PieceRenderer pieceRenderer) {
-        this.pieceRenderer = pieceRenderer;
-    }
-
-    /**
-     * Sets the ThemeManager for this controller.
-     *
-     * @param themeManager the ThemeManager to use
-     */
-    public void setThemeManager(ThemeManager themeManager) {
-        this.themeManager = themeManager;
-    }
-
-    /**
-     * Sets the ViewManager for this controller.
-     *
-     * @param viewManager the ViewManager to use
-     */
-    public void setViewManager(ViewManager viewManager) {
-        this.viewManager = viewManager;
-    }
-
-    /**
-     * Sets the LeaderboardView for this controller.
-     *
-     * @param leaderboardView the LeaderboardView to use
-     */
-    public void setLeaderboardView(LeaderboardView leaderboardView) {
-        this.leaderboardView = leaderboardView;
-    }
-
     /**
      * Sets the GameController for this controller.
+     * <p>
+     * Establishes the connection to the game logic controller and updates
+     * the mode indicator to reflect the current game mode.
      *
-     * @param gameController the GameController to use
+     * @param gameController the GameController instance managing game logic and state
      */
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
@@ -337,29 +205,32 @@ public class GuiController implements Initializable {
 
     /**
      * Sets the InputEventListener for game logic callbacks.
+     * <p>
+     * Establishes the connection between UI input events and game logic
+     * by providing the listener that will process move, rotate, and other game events.
      *
-     * @param eventListener the InputEventListener to use
+     * @param eventListener the InputEventListener to handle game logic callbacks
      */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
 
-    // Game Initialization
-
     /**
      * Initializes the game view with the board matrix and initial piece.
-     * Sets up the display grid, game panel dimensions, and creates initial rectangles for pieces and ghost pieces.
+     * <p>
+     * Sets up the display grid by creating Rectangle objects for each board cell,
+     * configures game panel dimensions, and creates initial rectangles for the current
+     * piece and its ghost preview. Also initializes and starts the game timeline for
+     * automatic piece dropping.
      *
-     * @param boardMatrix the 2D array representing the game board
-     * @param brick       the initial piece data
+     * @param boardMatrix the 2D array representing the game board state
+     * @param brick       the ViewData containing the initial piece information
      */
-
     public void initGameView(int[][] boardMatrix, ViewData brick) {
 
         gamePanel.getChildren().clear();
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
 
-        // Create display matrix (skip invisible rows)
         for (int row = GameConstants.INVISIBLE_ROWS; row < boardMatrix.length; row++) {
             for (int column = 0; column < boardMatrix[row].length; column++) {
                 Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
@@ -370,7 +241,6 @@ public class GuiController implements Initializable {
         }
         brickPanel.getChildren().clear();
 
-        // Set game panel dimensions
         int panelWidth = boardMatrix[0].length * GameConstants.BRICK_SIZE;
         int panelHeight = (boardMatrix.length - GameConstants.INVISIBLE_ROWS) * GameConstants.BRICK_SIZE;
 
@@ -378,25 +248,21 @@ public class GuiController implements Initializable {
         gamePanel.setMaxSize(panelWidth, panelHeight);
         gamePanel.setPrefSize(panelWidth, panelHeight);
 
-        // Set clipping rectangle
         Rectangle clip = new Rectangle();
         clip.setWidth(panelWidth);
         clip.setHeight(panelHeight);
         gamePanel.setClip(clip);
 
-        // Create rectangles for current piece
         rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
         ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
 
         for (int row = 0; row < brick.getBrickData().length; row++) {
             for (int column = 0; column < brick.getBrickData()[row].length; column++) {
 
-                // Create ghost piece rectangle
                 Rectangle ghost = pieceRenderer.createGhostBrick();
                 ghostRectangles[row][column] = ghost;
                 gamePanel.getChildren().add(ghost);
 
-                // Create current piece rectangle
                 Rectangle rectangle = pieceRenderer.createStyledBrick(brick.getBrickData()[row][column]);
                 rectangle.setManaged(false);
                 rectangles[row][column] = rectangle;
@@ -404,7 +270,6 @@ public class GuiController implements Initializable {
             }
         }
 
-        // Configure grid spacing
         gamePanel.setPadding(Insets.EMPTY);
         gamePanel.setHgap(UIConstants.GAME_BOARD_HGAP);
         gamePanel.setVgap(UIConstants.GAME_BOARD_VGAP);
@@ -418,50 +283,42 @@ public class GuiController implements Initializable {
         updateBrickPosition(brick);
         updateGhost(brick);
 
-        // Create game Timeline
         gameTimeline = new GameTimeline(() -> {
             if (!isGameOver.getValue() && !isPause.getValue()) {
-                moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
+                moveDown(new MoveEvent(EventSource.THREAD));
             }
         });
         gameTimeline.start();
     }
 
-    // Piece Rendering
-
-    /**
-     * Gets the fill color for a given color code.
-     * Delegates to PieceRenderer.
-     *
-     * @param colorCode the color code (0-7)
-     * @return the Paint color
-     */
-    private Paint getFillColor(int colorCode) {
-        return pieceRenderer.getFillColor(colorCode);
-    }
-
     /**
      * Refreshes the brick display after a move.
-     * Updates the piece rectangles if the piece shape has changed, and updates positions and ghost piece.
+     * <p>
+     * Updates the piece rectangles if the piece shape has changed (such as after
+     * rotation), updates the position of all piece blocks, updates the ghost piece
+     * preview, and refreshes the next piece previews from the generator.
      *
-     * @param brick the updated ViewData for the current piece
+     * @param brick the ViewData containing updated information for the current piece
      */
     public void refreshBrick(ViewData brick) {
-            if (rectangles.length != brick.getBrickData().length ||
-                    rectangles[0].length != brick.getBrickData()[0].length) {
-                recreatePieceRectangles(brick);
-            }
-            updateBrickPosition(brick);
-            updateGhost(brick);
-            updateNextPiecesFromGenerator();
+        if (rectangles.length != brick.getBrickData().length ||
+                rectangles[0].length != brick.getBrickData()[0].length) {
+            recreatePieceRectangles(brick);
+        }
+        updateBrickPosition(brick);
+        updateGhost(brick);
+        updateNextPiecesFromGenerator();
 
     }
 
     /**
-     * Recreates piece rectangles when the piece shape changes (e.g., after rotation).
-     * Removes old rectangles and creates new ones with the correct dimensions.
+     * Recreates piece rectangles when the piece shape changes.
+     * <p>
+     * Removes old Rectangle objects and creates new ones with the correct dimensions
+     * to match the new piece shape. This is necessary after rotation when the
+     * bounding box dimensions change (e.g., I-piece rotating from 1x4 to 4x1).
      *
-     * @param brick the ViewData containing the new piece shape
+     * @param brick the ViewData containing the new piece shape and dimensions
      */
     private void recreatePieceRectangles(ViewData brick) {
         for (int row = 0; row < brick.getBrickData().length; row++) {
@@ -471,11 +328,9 @@ public class GuiController implements Initializable {
             }
         }
 
-        // Create new arrays
         rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
         ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
 
-        // Create new rectangles
         for (int row = 0; row < brick.getBrickData().length; row++) {
             for (int column = 0; column < brick.getBrickData()[row].length; column++) {
                 Rectangle ghost = pieceRenderer.createGhostBrick();
@@ -493,14 +348,12 @@ public class GuiController implements Initializable {
             }
         }
 
-        // Add ghost rectangles
         for (Rectangle[] ghostRow : ghostRectangles) {
             for (Rectangle ghost : ghostRow) {
                 gamePanel.getChildren().add(ghost);
             }
         }
 
-        // Add piece rectangles on top
         for (Rectangle[] rectRow : rectangles) {
             for (Rectangle rectangle : rectRow) {
                 gamePanel.getChildren().add(rectangle);
@@ -510,9 +363,12 @@ public class GuiController implements Initializable {
 
     /**
      * Updates the position of the current piece rectangles.
-     * Sets visibility, color, and translation for each rectangle based on the piece data and position.
+     * <p>
+     * Sets visibility, color, and translation for each rectangle based on the piece
+     * data and position. Hides blocks that are in the invisible rows at the top of
+     * the board or that are empty (0 value) in the piece data.
      *
-     * @param brick the ViewData containing piece position and data
+     * @param brick the ViewData containing piece position and block data
      */
     private void updateBrickPosition(ViewData brick) {
         for (int row = 0; row < brick.getBrickData().length; row++) {
@@ -534,7 +390,10 @@ public class GuiController implements Initializable {
 
     /**
      * Updates the ghost piece position.
-     * Calculates where the current piece would land if hard dropped, and positions the ghost piece rectangles accordingly.
+     * <p>
+     * Calculates where the current piece would land if hard dropped by testing
+     * positions downward until a collision is detected. Positions the semi-transparent
+     * ghost piece rectangles at this landing position to provide visual guidance.
      *
      * @param brick the ViewData for the current piece
      */
@@ -570,9 +429,11 @@ public class GuiController implements Initializable {
 
     /**
      * Refreshes the game background based on the board matrix.
-     * Updates the display matrix to show locked pieces.
+     * <p>
+     * Updates the display matrix rectangles to show locked pieces that have
+     * been placed on the board. Called after pieces are locked in place.
      *
-     * @param board the 2D array representing the game board
+     * @param board the 2D array representing the current game board state
      */
     public void refreshGameBackground(int[][] board) {
         for (int row = GameConstants.INVISIBLE_ROWS; row < board.length; row++) {
@@ -585,13 +446,14 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Input Handling
-
     /**
      * Handles key press events.
-     * Creates an input handler if needed and delegates to it.
+     * <p>
+     * Creates an input handler if one doesn't exist and delegates the key
+     * event to it for processing. The input handler routes keys to appropriate
+     * game actions.
      *
-     * @param keyEvent the KeyEvent to handle
+     * @param keyEvent the KeyEvent triggered by user keyboard input
      */
     private void handleKeyPress(KeyEvent keyEvent) {
         if (inputHandler == null) {
@@ -602,6 +464,10 @@ public class GuiController implements Initializable {
 
     /**
      * Creates and configures the input handler with all necessary callbacks.
+     * <p>
+     * Sets up the GameInputHandler with references to the event listener and
+     * game state properties, then configures all action callbacks for pause,
+     * new game, hard drop, hold, move down, and refresh operations.
      */
     private void createInputHandler() {
         inputHandler = new GameInputHandler(eventListener, isPause, isGameOver);
@@ -616,9 +482,12 @@ public class GuiController implements Initializable {
 
     /**
      * Moves the current piece down by one row.
-     * Handles line clearing, score notifications, and piece locking.
+     * <p>
+     * Handles the logic for moving a piece down, including checking for line clears,
+     * displaying score notifications when lines are cleared, and refreshing the display.
+     * Returns early if the game is over, paused, or no timeline exists.
      *
-     * @param event the MoveEvent containing movement details
+     * @param event the MoveEvent containing movement details and source information
      */
     private void moveDown(MoveEvent event) {
         if (gameTimeline == null) {
@@ -642,7 +511,10 @@ public class GuiController implements Initializable {
 
     /**
      * Performs a hard drop of the current piece.
-     * Instantly drops the piece to its landing position and locks it.
+     * <p>
+     * Instantly drops the piece to its landing position and locks it in place.
+     * Displays score notifications if any lines are cleared as a result, and
+     * refreshes the display with the new board state.
      */
     public void hardDrop() {
         DownData downData = eventListener.onHardDrop(eventListener.getCurrentBrick());
@@ -657,11 +529,12 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
-    // Next Piece Preview
 
     /**
      * Initializes the next piece preview panels.
-     * Creates a 4x4 grid of rectangles in each preview panel.
+     * <p>
+     * Creates 4x4 grids of Rectangle objects in each of the three preview panels
+     * to display upcoming pieces. Uses PieceRenderer to set up the panels.
      */
     private void initializeNextPiecePreview() {
         nextPieceRectangles = new Rectangle[GameConstants.NEXT_PIECE_PREVIEW_COUNT][][];
@@ -676,14 +549,16 @@ public class GuiController implements Initializable {
 
     /**
      * Updates all next piece preview panels with new piece data.
+     * <p>
+     * Renders each upcoming piece in its corresponding preview panel. If fewer
+     * pieces are available than preview slots, remaining panels are cleared.
      *
-     * @param nextBrickDataList the list of piece data arrays for upcoming pieces
+     * @param nextBrickDataList the list of 2D arrays representing upcoming pieces
      */
     public void updateNextPieces(List<int[][]> nextBrickDataList) {
         for (int i = 0; i < GameConstants.NEXT_PIECE_PREVIEW_COUNT; i++) {
             if (i < nextBrickDataList.size()) {
                 pieceRenderer.renderPieceOnPreview(
-                        getPreviewPanelByIndex(i),
                         nextBrickDataList.get(i),
                         nextPieceRectangles[i]
                 );
@@ -694,26 +569,11 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Gets a preview panel by its index.
-     *
-     * @param index the panel index (0, 1, or 2)
-     * @return the corresponding GridPane
-     */
-    private GridPane getPreviewPanelByIndex(int index) {
-        switch (index) {
-            case 0:
-                return nextPiecePanel1;
-            case 1:
-                return nextPiecePanel2;
-            case 2:
-                return nextPiecePanel3;
-            default:
-                return nextPiecePanel1;
-        }
-    }
-
-    /**
      * Updates the next piece previews from the piece generator.
+     * <p>
+     * Queries the event listener for the next pieces in the queue and updates
+     * the preview panels accordingly. Called after piece movements to keep
+     * previews current.
      */
     private void updateNextPiecesFromGenerator() {
         if (eventListener != null) {
@@ -722,11 +582,11 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Hold Piece
-
     /**
      * Initializes the hold piece panel.
-     * Creates a 4x4 grid of rectangles for displaying the held piece.
+     * <p>
+     * Creates a 4x4 grid of Rectangle objects for displaying the currently
+     * held piece. Uses PieceRenderer to set up the panel structure.
      */
     private void initializeHoldPiecePanel() {
         holdPieceRectangles = pieceRenderer.initializePreviewPanel(holdPiecePanel);
@@ -734,6 +594,9 @@ public class GuiController implements Initializable {
 
     /**
      * Sets up key binding for the hold piece feature.
+     * <p>
+     * Configures keyboard event handlers to trigger the hold action when
+     * C or SHIFT keys are pressed during active gameplay.
      */
     private void setupHoldKeyBinding() {
         gamePanel.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
@@ -747,9 +610,12 @@ public class GuiController implements Initializable {
 
     /**
      * Handles the hold piece action.
-     * Swaps the current piece with the held piece, or stores the current piece if none is held.
+     * <p>
+     * Swaps the current piece with the held piece, or stores the current piece
+     * if no piece is currently held. Updates the hold display panel and refreshes
+     * the current piece display. Returns early if the game is over or paused.
      *
-     * @param actionEvent the ActionEvent (can be null if triggered by keyboard)
+     * @param actionEvent the ActionEvent from button click, or null if triggered by keyboard
      */
     @FXML
     public void holdPiece(ActionEvent actionEvent) {
@@ -768,16 +634,21 @@ public class GuiController implements Initializable {
 
     /**
      * Updates the hold piece display panel.
+     * <p>
+     * Renders the specified piece data in the hold panel, or clears the panel
+     * if null is provided (indicating no piece is currently held).
      *
-     * @param holdPieceData the 2D array representing the held piece, or null if no piece is held
+     * @param holdPieceData the 2D array representing the held piece, or null if empty
      */
     public void updateHoldPieceDisplay(int[][] holdPieceData) {
-        pieceRenderer.renderPieceOnPreview(holdPiecePanel, holdPieceData, holdPieceRectangles);
+        pieceRenderer.renderPieceOnPreview(holdPieceData, holdPieceRectangles);
     }
 
     /**
      * Sets whether the hold feature is enabled or disabled.
-     * Updates the button styling to reflect the state.
+     * <p>
+     * Updates the hold button styling to visually indicate whether the hold
+     * action is currently available or has already been used for this piece.
      *
      * @param enabled true if hold is available, false if already used
      */
@@ -791,13 +662,13 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Game Control
-
     /**
      * Binds the score label to a score property.
-     * The label will automatically update when the score changes.
+     * <p>
+     * Establishes a binding so the score label automatically updates whenever
+     * the score property changes. Unbinds any previous binding first.
      *
-     * @param scoreProperty the IntegerProperty to bind to
+     * @param scoreProperty the IntegerProperty to bind to the score label
      */
     public void bindScore(IntegerProperty scoreProperty) {
         scoreLabel.textProperty().unbind();
@@ -807,7 +678,9 @@ public class GuiController implements Initializable {
 
     /**
      * Handles the game over state.
-     * Stops the game timeline and displays the game over screen.
+     * <p>
+     * Stops the game timeline, displays the game over screen, sets the game over
+     * flag, and updates the high score label if a new high score was achieved.
      */
     public void gameOver() {
         if (gameTimeline != null) {
@@ -822,18 +695,21 @@ public class GuiController implements Initializable {
 
         if (gameController != null) {
             GameMode currentMode = gameController.getCurrentGameMode();
-            int finalScore = Integer.parseInt(scoreLabel.getText().replace("Score: ", ""));
             int highScore = gameController.getLeaderboardScores(currentMode, 1).isEmpty() ?
-                    0 : gameController.getLeaderboardScores(currentMode, 1).get(0);
+                    0 : gameController.getLeaderboardScores(currentMode, 1).getFirst();
             highScoreLabel.setText("High Score: " + highScore);
         }
     }
 
     /**
      * Starts a new game.
-     * Resets game state, hides menus, and initializes a fresh game.
+     * <p>
+     * Resets game state flags, hides game over and pause menus, updates the high
+     * score label, creates a fresh game through the event listener, initializes
+     * a new game timeline with appropriate speed for the current mode, and starts
+     * automatic piece dropping.
      *
-     * @param actionEvent the ActionEvent (can be null)
+     * @param actionEvent the ActionEvent from button click, or null if triggered programmatically
      */
     public void newGame(ActionEvent actionEvent) {
         if (gameTimeline != null) {
@@ -857,7 +733,7 @@ public class GuiController implements Initializable {
         if (gameController != null) {
             GameMode currentMode = gameController.getCurrentGameMode();
             int highScore = gameController.getLeaderboardScores(currentMode, 1).isEmpty() ?
-                    0 : gameController.getLeaderboardScores(currentMode, 1).get(0);
+                    0 : gameController.getLeaderboardScores(currentMode, 1).getFirst();
             highScoreLabel.setText("High Score: " + highScore);
         }
 
@@ -869,7 +745,7 @@ public class GuiController implements Initializable {
         }
         gameTimeline = new GameTimeline(() -> {
             if (!isGameOver.getValue() && !isPause.getValue()) {
-                moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
+                moveDown(new MoveEvent(EventSource.THREAD));
             }
         }, speed
         );
@@ -881,8 +757,10 @@ public class GuiController implements Initializable {
 
     /**
      * Updates the high score label.
+     * <p>
+     * Sets the text of the high score label to display the provided value.
      *
-     * @param highscore the new high score value
+     * @param highscore the new high score value to display
      */
     public void updateHighScoreLabel(int highscore) {
         if (highScoreLabel != null) {
@@ -892,8 +770,13 @@ public class GuiController implements Initializable {
 
     /**
      * Toggles the pause state of the game.
+     * <p>
+     * If the game is currently paused, resumes gameplay by hiding the pause menu,
+     * resuming the game controller, and restarting the timeline. If not paused,
+     * pauses the game by showing the pause menu and stopping the timeline.
+     * Has no effect if the game is over.
      *
-     * @param actionEvent the ActionEvent (can be null)
+     * @param actionEvent the ActionEvent from button click, or null if triggered by keyboard
      */
     public void pauseGame(ActionEvent actionEvent) {
         if (isGameOver.getValue()) {
@@ -928,7 +811,11 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Pauses the game (called externally).
+     * Pauses the game.
+     * <p>
+     * External method to pause the game by stopping the timeline and pausing
+     * the game controller. Used when pause needs to be triggered programmatically
+     * rather than through user input.
      */
     public void pauseGame() {
         if (gameTimeline != null) {
@@ -940,22 +827,11 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Resumes the game (called externally).
-     */
-    public void resumeGame() {
-        if (gameTimeline != null) {
-            gameTimeline.resume();
-            }
-
-        if (gameController != null) {
-            gameController.resumeGame();
-        }
-    }
-
-    /**
      * Restarts the current game.
+     * <p>
+     * Delegates to newGame to reset and start a fresh game session.
      *
-     * @param event the ActionEvent
+     * @param event the ActionEvent from the restart button
      */
     public void restartGame(ActionEvent event) {
         newGame(event);
@@ -963,37 +839,22 @@ public class GuiController implements Initializable {
 
     /**
      * Quits the application.
+     * <p>
+     * Terminates the application immediately by calling System.exit.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the quit button
      */
     public void quitGame(ActionEvent actionEvent) {
         System.exit(0);
     }
 
-    // Menu Navigation
-
-    /**
-     * Starts the game from the main menu.
-     *
-     * @param actionEvent the ActionEvent
-     */
-    @FXML
-    public void startGame(ActionEvent actionEvent) {
-        if (gameTimeline != null) {
-            gameTimeline.stop();
-            gameTimeline = null;
-        }
-
-        viewManager.showGame();
-        newGame(actionEvent);
-        gamePanel.requestFocus();
-    }
-
     /**
      * Returns to the main menu from any screen.
-     * Stops the game and cleans up resources.
+     * <p>
+     * Stops the game timeline, pauses the game controller, resets game state flags,
+     * hides all game screens and menus, and shows the home menu.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the back to menu button
      */
     @FXML
     public void backToMainMenu(ActionEvent actionEvent) {
@@ -1027,18 +888,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Shows the How to Play screen.
-     *
-     * @param actionEvent the ActionEvent
-     */
-    @FXML
-    public void showHowToPlay(ActionEvent actionEvent) {
-        showHowToPlayInternal();
-    }
-
-    /**
      * Internal method to show How to Play screen.
-     * Updates the start button based on the selected game mode.
+     * <p>
+     * Updates the start button text and styling based on the selected game mode
+     * (Classic or Time Attack) to provide clear indication of which mode will start.
      */
     private void showHowToPlayInternal() {
 
@@ -1055,8 +908,12 @@ public class GuiController implements Initializable {
 
     /**
      * Starts the game from the How to Play screen.
+     * <p>
+     * Stops any existing timeline, hides the how to play menu, shows the game board,
+     * starts the selected game mode (Classic or Time Attack), creates a new game
+     * timeline with appropriate speed, and resets game state flags.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the start game button
      */
     @FXML
     public void startGameFromHowToPlay(ActionEvent actionEvent) {
@@ -1093,7 +950,7 @@ public class GuiController implements Initializable {
 
         gameTimeline = new GameTimeline(() -> {
             if (!isGameOver.getValue() && !isPause.getValue()) {
-                moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
+                moveDown(new MoveEvent(EventSource.THREAD));
             }
         }, speed);
 
@@ -1109,20 +966,23 @@ public class GuiController implements Initializable {
 
     /**
      * Returns to main menu from How to Play screen.
+     * <p>
+     * Delegates to the main backToMainMenu method.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the back button
      */
     @FXML
     public void backToMainMenuFromHowToPlay(ActionEvent actionEvent) {
         backToMainMenu(actionEvent);
     }
 
-    // Theme Management
-
     /**
      * Shows the theme selection menu.
+     * <p>
+     * Uses the ViewManager to display the themes screen where users can
+     * choose different visual themes for the application.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the themes button
      */
     @FXML
     public void showThemes(ActionEvent actionEvent) {
@@ -1141,8 +1001,11 @@ public class GuiController implements Initializable {
 
     /**
      * Applies the default theme.
+     * <p>
+     * Uses the ThemeManager to apply the default visual theme to the root pane
+     * and menus, then returns to the main menu.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the theme button
      */
     @FXML
     public void setDefaultTheme(ActionEvent actionEvent) {
@@ -1153,8 +1016,11 @@ public class GuiController implements Initializable {
 
     /**
      * Applies the countryside theme.
+     * <p>
+     * Uses the ThemeManager to apply the countryside visual theme to the root pane
+     * and menus, then returns to the main menu.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the theme button
      */
     @FXML
     public void setCountrysideTheme(ActionEvent actionEvent) {
@@ -1165,8 +1031,11 @@ public class GuiController implements Initializable {
 
     /**
      * Applies the beach theme.
+     * <p>
+     * Uses the ThemeManager to apply the beach visual theme to the root pane
+     * and menus, then returns to the main menu.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the theme button
      */
     @FXML
     public void setBeachTheme(ActionEvent actionEvent) {
@@ -1177,8 +1046,11 @@ public class GuiController implements Initializable {
 
     /**
      * Applies the tron theme.
+     * <p>
+     * Uses the ThemeManager to apply the tron visual theme to the root pane
+     * and menus, then returns to the main menu.
      *
-     * @param actionEvent the ActionEvent
+     * @param actionEvent the ActionEvent from the theme button
      */
     @FXML
     public void setTronTheme(ActionEvent actionEvent) {
@@ -1189,29 +1061,37 @@ public class GuiController implements Initializable {
 
     /**
      * Initializes the How to Play background image.
+     * <p>
+     * Loads the howtoplay.png image and sets it as the background for the
+     * how to play menu with appropriate sizing and positioning. Logs an
+     * error if the image fails to load.
      */
     private void initializeHowToPlayBackground() {
         try {
-            javafx.scene.image.Image howToPlayBg = new javafx.scene.image.Image(
-                    getClass().getResourceAsStream("/howtoplay.png")
-            );
-            BackgroundImage backgroundImage = new BackgroundImage(
-                    howToPlayBg,
-                    BackgroundRepeat.NO_REPEAT,
-                    BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.CENTER,
-                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
-            );
-            howToPlayMenu.setBackground(new Background(backgroundImage));
+            var imageStream = getClass().getResourceAsStream("/howtoplay.png");
+            if (imageStream != null) {
+                javafx.scene.image.Image howToPlayBg = new javafx.scene.image.Image(imageStream);
+                BackgroundImage backgroundImage = new BackgroundImage(
+                        howToPlayBg,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundPosition.CENTER,
+                        new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+                );
+                howToPlayMenu.setBackground(new Background(backgroundImage));
+            } else {
+                System.err.println("Warning: howtoplay.png image file not found");
+            }
         } catch (Exception e) {
             System.out.println("Error loading How To Play background: " + e.getMessage());
         }
     }
 
-    // Game Mode
-
     /**
      * Prepares to start Classic mode.
+     * <p>
+     * Sets the internal mode flag to Classic and displays the How to Play screen
+     * with Classic mode styling and instructions.
      */
     @FXML
     public void showHowToPlayForClassic() {
@@ -1222,6 +1102,9 @@ public class GuiController implements Initializable {
 
     /**
      * Prepares to start Time Attack mode.
+     * <p>
+     * Sets the internal mode flag to Time Attack and displays the How to Play screen
+     * with Time Attack mode styling and instructions.
      */
     @FXML
     public void showHowToPlayForTimeAttack() {
@@ -1230,37 +1113,11 @@ public class GuiController implements Initializable {
         viewManager.showHowToPlay();
     }
 
-
-    /**
-     * Starts Classic mode.
-     */
-    @FXML
-    public void startClassicMode() {
-        viewManager.showGame();
-
-        if (gameController != null) {
-            gameController.startClassicMode();
-            updateModeIndicator("Classic");
-        }
-        newGame(null);
-    }
-
-    /**
-     * Starts Time Attack mode.
-     */
-    @FXML
-    public void startTimeAttackMode() {
-        viewManager.showGame();
-
-        if (gameController != null) {
-            gameController.startTimeAttackMode();
-            updateModeIndicator("Time Attack");
-        }
-        newGame(null);
-    }
-
     /**
      * Updates the mode indicator label.
+     * <p>
+     * Sets the text and color of the mode indicator based on the current game mode.
+     * Time Attack mode displays in orange, Classic mode in teal.
      *
      * @param mode the mode name ("Classic" or "Time Attack")
      */
@@ -1276,12 +1133,14 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Timer for Time Attack
 
     /**
      * Updates the timer display.
+     * <p>
+     * Formats and displays the remaining time in MM:SS format. Changes the color
+     * to red if time is critical, orange if low, or orange if normal.
      *
-     * @param seconds the remaining seconds
+     * @param seconds the remaining seconds in Time Attack mode
      */
     public void updateTimer(int seconds) {
         if (timerLabel != null) {
@@ -1301,6 +1160,8 @@ public class GuiController implements Initializable {
 
     /**
      * Shows the timer label.
+     * <p>
+     * Makes the timer label visible for Time Attack mode.
      */
     public void showTimer() {
         if (timerLabel != null) {
@@ -1310,6 +1171,8 @@ public class GuiController implements Initializable {
 
     /**
      * Hides the timer label.
+     * <p>
+     * Hides the timer label for Classic mode or when not needed.
      */
     public void hideTimer() {
         if (timerLabel != null) {
@@ -1317,10 +1180,10 @@ public class GuiController implements Initializable {
         }
     }
 
-    // Leaderboard
-
     /**
-     * Shows the leaderboard (defaults to Classic mode).
+     * Shows the leaderboard.
+     * <p>
+     * Defaults to displaying the Classic mode leaderboard.
      */
     public void showLeaderboard() {
         showClassicLeaderboard();
@@ -1328,6 +1191,8 @@ public class GuiController implements Initializable {
 
     /**
      * Closes the leaderboard display.
+     * <p>
+     * Hides the leaderboard view and returns focus to the game panel.
      */
     public void closeLeaderboard() {
         viewManager.hideLeaderboard();
@@ -1336,6 +1201,9 @@ public class GuiController implements Initializable {
 
     /**
      * Shows the Classic mode leaderboard.
+     * <p>
+     * Retrieves top scores for Classic mode from the game controller and
+     * displays them in the leaderboard view.
      */
     @FXML
     public void showClassicLeaderboard() {
@@ -1349,6 +1217,9 @@ public class GuiController implements Initializable {
 
     /**
      * Shows the Time Attack mode leaderboard.
+     * <p>
+     * Retrieves top scores for Time Attack mode from the game controller and
+     * displays them in the leaderboard view.
      */
     @FXML
     public void showTimeAttackLeaderboard() {
@@ -1362,13 +1233,14 @@ public class GuiController implements Initializable {
 
     /**
      * Shows the game over screen with final score.
+     * <p>
+     * Displays the game mode and final score in the notification area.
      *
-     * @param score the final score
-     * @param mode  the game mode name
+     * @param score the final score achieved
+     * @param mode  the game mode name ("Classic" or "Time Attack")
      */
     public void showGameOver(int score, String mode) {
         String gameOverText = mode + " Mode\nFinal Score: " + score;
         groupNotification.setVisible(true);
     }
 }
-

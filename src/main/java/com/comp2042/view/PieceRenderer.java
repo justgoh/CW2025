@@ -108,13 +108,13 @@ public class PieceRenderer {
 
     /**
      * Renders a piece on a preview panel (next piece or hold piece).
-     * Centers the piece within a 4x4 grid and applies appropriate colors.
+     * <p>
+     *  Centers the piece within a 4x4 grid and applies appropriate colors.
      *
-     * @param panel      the GridPane to render the piece on
      * @param pieceData  the 2D array representing the piece shape and colors
      * @param rectangles the 2D array of Rectangle objects in the panel
      */
-    public void renderPieceOnPreview(GridPane panel, int[][] pieceData, Rectangle[][] rectangles) {
+    public void renderPieceOnPreview(int[][] pieceData, Rectangle[][] rectangles) {
         for (int row = 0; row < GameConstants.PREVIEW_GRID_SIZE; row++) {
             for (int column = 0; column < GameConstants.PREVIEW_GRID_SIZE; column++) {
                 rectangles[row][column].setFill(Color.TRANSPARENT);
@@ -147,6 +147,7 @@ public class PieceRenderer {
 
     /**
      * Initializes a preview panel with a grid of Rectangle objects.
+     *  <p>
      * Sets up the GridPane with appropriate spacing and padding.
      *
      * @param panel the GridPane to initialize
@@ -178,9 +179,9 @@ public class PieceRenderer {
      * @param rectangles the 2D array of Rectangle objects to clear
      */
     public void clearPreviewPanel(Rectangle[][] rectangles) {
-        for (int row = 0; row < rectangles.length; row++) {
-            for (int column = 0; column < rectangles[row].length; column++) {
-                rectangles[row][column].setFill(Color.TRANSPARENT);
+        for (Rectangle[] rectangle : rectangles) {
+            for (Rectangle value : rectangle) {
+                value.setFill(Color.TRANSPARENT);
             }
         }
     }

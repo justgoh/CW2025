@@ -170,7 +170,7 @@ public class SimpleBoard implements Board {
      */
     @Override
     public ViewData getViewData() {
-        return new ViewData(brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y, brickGenerator.getNextBrick().getShapeMatrix().get(0));
+        return new ViewData(brickRotator.getCurrentShape(), brickOffset.x, brickOffset.y, brickGenerator.getNextBrick().getShapeMatrix().getFirst());
     }
 
     /**

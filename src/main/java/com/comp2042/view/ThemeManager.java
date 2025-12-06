@@ -4,51 +4,41 @@ import com.comp2042.model.Theme;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
+import java.io.InputStream;
+
 /**
  * Manages visual themes for the Tetris application.
- * This class handles the application of different visual themes including gradient-based themes and image-based background themes.
- * <p>Supported theme types:
+ * <p>
+ * This class handles the application of different visual themes including
+ * gradient-based themes and image-based background themes. It ensures consistent
+ * theme application across all relevant UI components.
+ * <p>
+ * <b>Functionality:</b>
  * <ul>
- *   <li>Gradient themes - CSS-based color gradients</li>
- *   <li>Image themes - Background image overlays</li>
+ *   <li>Applies gradient-based CSS themes</li>
+ *   <li>Applies image-based background themes</li>
+ *   <li>Manages theme switching with fallback handling</li>
  * </ul>
- *
- * <p>The ThemeManager ensures consistent theme application across all
- * relevant UI components including menus and game screens.
  */
-
 public class ThemeManager {
-    /**
-     * The currently active theme
-     */
-    private Theme currentTheme;
 
     /**
      * Constructs a new ThemeManager with the default theme.
      */
     public ThemeManager() {
-        this.currentTheme = Theme.DEFAULT;
-    }
-
-    /**
-     * Gets the currently active theme.
-     *
-     * @return the current Theme enum value
-     */
-    public Theme getCurrentTheme() {
-        return currentTheme;
     }
 
     /**
      * Applies a theme to the specified pane and related UI components.
-     * Automatically determines whether to apply a gradient or image theme based on the theme type.
+     * <p>
+     * Automatically determines whether to apply a gradient or image theme
+     * based on the theme type.
      *
      * @param theme           the Theme to apply
      * @param rootPane        the main Pane to apply the theme to
      * @param additionalPanes optional additional Panes that should also receive the theme
      */
     public void applyTheme(Theme theme, Pane rootPane, Pane... additionalPanes) {
-        this.currentTheme = theme;
 
         if (theme.isImageTheme()) {
             applyImageTheme(theme, rootPane, additionalPanes);
@@ -59,7 +49,10 @@ public class ThemeManager {
 
     /**
      * Applies an image-based theme to the specified panes.
-     * Loads the theme's background image and sets it as a BackgroundImage with appropriate sizing and positioning.
+     * <p>
+     * Loads the theme's background image and sets it as a BackgroundImage with
+     * appropriate sizing and positioning. Falls back to default theme if the
+     * image cannot be loaded.
      *
      * @param theme           the Theme containing the image resource
      * @param rootPane        the main Pane to apply the theme to
@@ -67,26 +60,15 @@ public class ThemeManager {
      */
     private void applyImageTheme(Theme theme, Pane rootPane, Pane... additionalPanes) {
         try {
-            Image bgImage = new Image(
-                    getClass().getResourceAsStream("/" + theme.getResource())
-            );
+            var imageStream = getClass().getResourceAsStream("/" + theme.getResource());
 
-            BackgroundImage backgroundImage = new BackgroundImage(
-                    bgImage,
-                    BackgroundRepeat.NO_REPEAT,
-                    BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.CENTER,
-                    new BackgroundSize(
-                            BackgroundSize.AUTO,
-                            BackgroundSize.AUTO,
-                            false,
-                            false,
-                            true,
-                            true
-                    )
-            );
-
-            Background background = new Background(backgroundImage);
+            if (imageStream == null) {
+                System.err.println("Error: Could not find theme image: " + theme.getResource());
+                System.err.println("Falling back to default theme");
+                applyTheme(Theme.DEFAULT, rootPane, additionalPanes);
+                return;
+            }
+            Background background = createImageBackground(imageStream);
 
             if (rootPane != null) {
                 rootPane.setBackground(background);
@@ -108,7 +90,39 @@ public class ThemeManager {
     }
 
     /**
+     * Creates a Background object from an image stream.
+     * <p>
+     * Configures the background image to cover the entire area while maintaining
+     * aspect ratio, with no repetition and centered positioning.
+     *
+     * @param imageStream the input stream containing the image data
+     * @return a Background configured with the image
+     */
+    private Background createImageBackground(InputStream imageStream) {
+        Image bgImage = new Image(
+                imageStream);
+
+        BackgroundImage backgroundImage = new BackgroundImage(
+                bgImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(
+                        BackgroundSize.AUTO,
+                        BackgroundSize.AUTO,
+                        false,
+                        false,
+                        true,
+                        true
+                )
+        );
+
+        return new Background(backgroundImage);
+    }
+
+    /**
      * Applies a gradient-based theme to the specified panes.
+     * <p>
      * Uses CSS styling to create color gradient backgrounds.
      *
      * @param theme           the Theme containing the gradient CSS
@@ -131,23 +145,4 @@ public class ThemeManager {
         }
     }
 
-    /**
-     * Applies the default theme to the specified panes.
-     * Convenience method for quickly reverting to the default appearance.
-     *
-     * @param rootPane        the main Pane to apply the theme to
-     * @param additionalPanes optional additional Panes that should also receive the theme
-     */
-    public void applyDefaultTheme(Pane rootPane, Pane... additionalPanes) {
-        applyTheme(Theme.DEFAULT, rootPane, additionalPanes);
-    }
-
-    /**
-     * Gets the name of the currently active theme.
-     *
-     * @return the theme name as a string
-     */
-    public String getCurrentThemeName() {
-        return currentTheme.getName();
-    }
 }

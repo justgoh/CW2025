@@ -1,7 +1,6 @@
 package com.comp2042.controller;
 
 import com.comp2042.view.EventSource;
-import com.comp2042.view.EventType;
 import com.comp2042.view.InputEventListener;
 import com.comp2042.view.MoveEvent;
 import javafx.beans.property.BooleanProperty;
@@ -10,8 +9,13 @@ import javafx.scene.input.KeyEvent;
 
 /**
  * Handles keyboard input for the Tetris game.
- * This class processes key press events and translates them into game actions by delegating to the appropriate event listener methods.
- * <p>Supported controls:
+ * <p>
+ * This class processes key press events and translates them into game actions
+ * by delegating to the appropriate event listener methods. The handler respects
+ * game state, preventing input when the game is paused or over (except for
+ * pause and new game commands).
+ * <p>
+ * <b>Supported Controls:</b>
  * <ul>
  *   <li>LEFT/A - Move piece left</li>
  *   <li>RIGHT/D - Move piece right</li>
@@ -22,54 +26,25 @@ import javafx.scene.input.KeyEvent;
  *   <li>N - Start new game</li>
  *   <li>C/SHIFT - Hold piece</li>
  * </ul>
- *
- * <p>The handler respects game state, preventing input when the game is paused or over (except for pause and new game commands).
  */
 public class GameInputHandler {
 
-    /**
-     * The event listener that processes game actions
-     */
     private final InputEventListener eventListener;
 
-    /**
-     * Property indicating if the game is currently paused
-     */
     private final BooleanProperty isPaused;
 
-    /**
-     * Property indicating if the game is over
-     */
     private final BooleanProperty isGameOver;
 
-    /**
-     * Callback for pause action
-     */
     private Runnable onPauseAction;
 
-    /**
-     * Callback for new game action
-     */
     private Runnable onNewGameAction;
 
-    /**
-     * Callback for hard drop action
-     */
     private Runnable onHardDropAction;
 
-    /**
-     * Callback for hold piece action
-     */
     private Runnable onHoldAction;
 
-    /**
-     * Callback for move down action
-     */
     private MoveDownCallback onMoveDownAction;
 
-    /**
-     * Callback for refresh brick action (after movement)
-     */
     private RefreshBrickCallback onRefreshBrickAction;
 
     /**
@@ -219,7 +194,7 @@ public class GameInputHandler {
     private void handleLeftMovement() {
         if (eventListener != null && onRefreshBrickAction != null) {
             onRefreshBrickAction.refresh(
-                    eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER))
+                    eventListener.onLeftEvent(new MoveEvent(EventSource.USER))
             );
         }
     }
@@ -231,7 +206,7 @@ public class GameInputHandler {
     private void handleRightMovement() {
         if (eventListener != null && onRefreshBrickAction != null) {
             onRefreshBrickAction.refresh(
-                    eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER))
+                    eventListener.onRightEvent(new MoveEvent(EventSource.USER))
             );
         }
     }
@@ -243,7 +218,7 @@ public class GameInputHandler {
     private void handleRotation() {
         if (eventListener != null && onRefreshBrickAction != null) {
             onRefreshBrickAction.refresh(
-                    eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER))
+                    eventListener.onRotateEvent(new MoveEvent(EventSource.USER))
             );
         }
     }
@@ -254,7 +229,7 @@ public class GameInputHandler {
      */
     private void handleSoftDrop() {
         if (onMoveDownAction != null) {
-            onMoveDownAction.moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+            onMoveDownAction.moveDown(new MoveEvent(EventSource.USER));
         }
     }
 

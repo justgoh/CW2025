@@ -58,6 +58,8 @@ public class HighScoreManager {
                 scores.add(Integer.parseInt(line.trim()));
             }
         } catch (Exception e) {
+            // IOException: File not found or read error (expected on first run)
+            // NumberFormatException: Corrupted score file
         }
         return scores;
     }
@@ -76,7 +78,7 @@ public class HighScoreManager {
                 writer.newLine();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error saving scores to " + fileName + ": " + e.getMessage());
         }
     }
 
@@ -93,7 +95,7 @@ public class HighScoreManager {
         List<Integer> scores = loadScores(mode);
         scores.add(score);
 
-        Collections.sort(scores, Collections.reverseOrder());
+        scores.sort(Collections.reverseOrder());
 
         if (scores.size() > 10) {
             scores = scores.subList(0, 10);
@@ -109,7 +111,7 @@ public class HighScoreManager {
      */
     public int loadHighScore(GameMode mode) {
         List<Integer> scores = loadScores(mode);
-        return scores.isEmpty() ? 0 : scores.get(0);
+        return scores.isEmpty() ? 0 : scores.getFirst();
     }
 
     /**
@@ -134,7 +136,7 @@ public class HighScoreManager {
      */
     public List<Integer> getTopScores(GameMode mode, int count) {
         List<Integer> scores = loadScores(mode);
-        Collections.sort(scores, Collections.reverseOrder());
+        scores.sort(Collections.reverseOrder());
         return scores.subList(0, Math.min(scores.size(), count));
     }
 
@@ -145,14 +147,10 @@ public class HighScoreManager {
      * @return the filename for the specified mode
      */
     private String getFileName(GameMode mode) {
-        switch (mode) {
-            case CLASSIC:
-                return CLASSIC_FILE;
-            case TIME_ATTACK:
-                return TIME_ATTACK_FILE;
-            default:
-                return CLASSIC_FILE;
-        }
+        return switch (mode) {
+            case CLASSIC -> CLASSIC_FILE;
+            case TIME_ATTACK -> TIME_ATTACK_FILE;
+        };
     }
 }
 

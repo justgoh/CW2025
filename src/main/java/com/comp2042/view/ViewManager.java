@@ -9,20 +9,18 @@ import javafx.scene.layout.VBox;
 
 /**
  * Manages the visibility and state transitions of different UI screens and menus.
- * This class serves as a centralized controller for showing and hiding various UI components, ensuring that only the appropriate screens are visible at any time.
- * <p>Managed UI components include:
+ * <p>
+ * This class serves as a centralized controller for showing and hiding various
+ * UI components, ensuring that only the appropriate screens are visible at any time.
+ * <p>
+ * <b>Functionality:</b>
  * <ul>
- *   <li>Main menu (home screen)</li>
- *   <li>How to play instructions</li>
- *   <li>Theme selection menu</li>
- *   <li>Game board and gameplay elements</li>
- *   <li>Pause menu overlay</li>
- *   <li>Game over screen</li>
- *   <li>Leaderboard display</li>
+ *   <li>Controls visibility of main menu, game screens, and overlays</li>
+ *   <li>Manages transitions between different UI states</li>
+ *   <li>Handles pause menu, game over screen, and leaderboard display</li>
+ *   <li>Provides null-safe visibility toggling for all components</li>
  * </ul>
- * <p>The ViewManager implements a state-based approach where transitioning to a new UI state automatically handles hiding irrelevant components and showing the appropriate ones.
  */
-
 public class ViewManager {
     // Main menu components
     private final VBox homeMenu;
@@ -45,11 +43,6 @@ public class ViewManager {
     private final Label timerLabel;
 
     /**
-     * The current UI state
-     */
-    private UIState currentState;
-
-    /**
      * Constructs a ViewManager with references to all managed UI components.
      *
      * @param homeMenu          the main menu VBox
@@ -65,7 +58,6 @@ public class ViewManager {
      * @param leaderMenu        the leaderboard display VBox
      * @param timerLabel        the timer label for time attack mode
      */
-
     public ViewManager(VBox homeMenu, VBox howToPlayMenu, VBox themesMenu,
                        StackPane gameBoard, GridPane brickPanel,
                        VBox leftSidebar, VBox rightSidebar,
@@ -84,26 +76,17 @@ public class ViewManager {
         this.groupNotification = groupNotification;
         this.leaderMenu = leaderMenu;
         this.timerLabel = timerLabel;
-        this.currentState = UIState.HOME;
-    }
-
-    /**
-     * Gets the current UI state.
-     *
-     * @return the current UIState enum value
-     */
-    public UIState getCurrentState() {
-        return currentState;
     }
 
     /**
      * Transitions to a new UI state.
-     * Automatically handles showing and hiding appropriate UI components.
+     * <p>
+     * Automatically handles showing and hiding appropriate UI components
+     * based on the target state.
      *
      * @param newState the UIState to transition to
      */
     public void setState(UIState newState) {
-        this.currentState = newState;
 
         switch (newState) {
             case HOME:
@@ -132,6 +115,7 @@ public class ViewManager {
 
     /**
      * Shows the home menu and hides all other components.
+     * <p>
      * This is the default starting state of the application.
      */
     public void showHome() {
@@ -147,12 +131,11 @@ public class ViewManager {
         setVisible(groupNotification, false);
         setVisible(leaderMenu, false);
         setVisible(timerLabel, false);
-
-        currentState = UIState.HOME;
     }
 
     /**
      * Shows the how-to-play instructions screen.
+     * <p>
      * Hides the home menu and other non-relevant components.
      */
     public void showHowToPlay() {
@@ -161,11 +144,11 @@ public class ViewManager {
         setVisible(themesMenu, false);
         setVisible(leaderMenu, false);
 
-        currentState = UIState.HOW_TO_PLAY;
     }
 
     /**
      * Shows the theme selection menu.
+     * <p>
      * Hides the home menu and other non-relevant components.
      */
     public void showThemes() {
@@ -174,11 +157,11 @@ public class ViewManager {
         setVisible(themesMenu, true);
         setVisible(leaderMenu, false);
 
-        currentState = UIState.THEMES;
     }
 
     /**
      * Shows the main game interface with all gameplay components.
+     * <p>
      * Hides all menu screens and overlays.
      */
     public void showGame() {
@@ -194,48 +177,39 @@ public class ViewManager {
         setVisible(groupNotification, false);
         setVisible(leaderMenu, false);
 
-        currentState = UIState.GAME;
     }
 
     /**
      * Shows the pause menu overlay.
+     * <p>
      * Game components remain visible but dimmed behind the pause menu.
      */
     public void showPause() {
         setVisible(pauseMenu, true);
-        currentState = UIState.PAUSED;
-    }
-
-    /**
-     * Hides the pause menu overlay.
-     * Returns to the active game state.
-     */
-    public void hidePause() {
-        setVisible(pauseMenu, false);
-        currentState = UIState.GAME;
     }
 
     /**
      * Shows the game over screen.
+     * <p>
      * Displays the final score and game over options.
      */
     public void showGameOver() {
         setVisible(groupNotification, true);
         setVisible(gameOverPanel, true);
-        currentState = UIState.GAME_OVER;
     }
 
     /**
      * Shows the leaderboard display.
+     * <p>
      * Can be shown from either menu or game states.
      */
     public void showLeaderboard() {
         setVisible(leaderMenu, true);
-        currentState = UIState.LEADERBOARD;
     }
 
     /**
      * Hides the leaderboard display.
+     * <p>
      * Returns to the previous state.
      */
     public void hideLeaderboard() {
@@ -243,49 +217,8 @@ public class ViewManager {
     }
 
     /**
-     * Shows the timer label.
-     * Used in time attack mode to display remaining time.
-     */
-    public void showTimer() {
-        setVisible(timerLabel, true);
-    }
-
-    /**
-     * Hides the timer label.
-     * Used when not in time attack mode.
-     */
-    public void hideTimer() {
-        setVisible(timerLabel, false);
-    }
-
-    /**
-     * Hides all menus and overlays.
-     * Useful for transitioning between different states.
-     */
-    public void hideAllMenus() {
-        setVisible(homeMenu, false);
-        setVisible(howToPlayMenu, false);
-        setVisible(themesMenu, false);
-        setVisible(pauseMenu, false);
-        setVisible(gameOverPanel, false);
-        setVisible(leaderMenu, false);
-    }
-
-    /**
-     * Hides all game-related components.
-     * Used when returning to menu states.
-     */
-    public void hideGameComponents() {
-        setVisible(gameBoard, false);
-        setVisible(brickPanel, false);
-        setVisible(leftSidebar, false);
-        setVisible(rightSidebar, false);
-        setVisible(groupNotification, false);
-        setVisible(timerLabel, false);
-    }
-
-    /**
      * Sets the visibility of a JavaFX Node safely.
+     * <p>
      * Checks for null before setting visibility to prevent NullPointerExceptions.
      *
      * @param node    the Node to show or hide
@@ -297,21 +230,4 @@ public class ViewManager {
         }
     }
 
-    /**
-     * Checks if the game is currently in an active gameplay state.
-     *
-     * @return true if in GAME, PAUSED, or GAME_OVER state
-     */
-    public boolean isInGameState() {
-        return currentState.isGameplayState();
-    }
-
-    /**
-     * Checks if the game is currently in a menu state.
-     *
-     * @return true if in HOME, HOW_TO_PLAY, THEMES, or LEADERBOARD state
-     */
-    public boolean isInMenuState() {
-        return currentState.isMenuState();
-    }
 }

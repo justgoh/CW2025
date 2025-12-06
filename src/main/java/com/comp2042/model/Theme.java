@@ -8,7 +8,7 @@ package com.comp2042.model;
  *   <li>DEFAULT - Dark gradient background</li>
  *   <li>COUNTRYSIDE</li>
  *   <li>BEACH</li>
- *   <li>TRONe</li>
+ *   <li>TRON</li>
  * </ul>
  * <p>
  */
@@ -43,19 +43,10 @@ public enum Theme {
             "tron_bg.png",
             ThemeType.IMAGE);
 
-    /**
-     * The internal name identifier for this theme
-     */
     private final String name;
 
-    /**
-     * The resource path (CSS style or image filename)
-     */
     private final String resource;
 
-    /**
-     * The type of theme (gradient or image-based)
-     */
     private final ThemeType type;
 
     /**
@@ -92,46 +83,12 @@ public enum Theme {
     }
 
     /**
-     * Gets the type of this theme.
-     *
-     * @return the ThemeType (GRADIENT or IMAGE)
-     */
-    public ThemeType getType() {
-        return type;
-    }
-
-    /**
      * Checks if this theme uses a background image.
      *
      * @return true if this is an image-based theme, false otherwise
      */
     public boolean isImageTheme() {
         return type == ThemeType.IMAGE;
-    }
-
-    /**
-     * Checks if this theme uses a CSS gradient.
-     *
-     * @return true if this is a gradient-based theme, false otherwise
-     */
-    public boolean isGradientTheme() {
-        return type == ThemeType.GRADIENT;
-    }
-
-    /**
-     * Retrieves a Theme enum by its name string.
-     * The search is case-insensitive.
-     *
-     * @param name the theme name to search for
-     * @return the corresponding Theme enum, or DEFAULT if not found
-     */
-    public static Theme fromName(String name) {
-        for (Theme theme : values()) {
-            if (theme.name.equalsIgnoreCase(name)) {
-                return theme;
-            }
-        }
-        return DEFAULT;
     }
 
     /**

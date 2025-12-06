@@ -54,13 +54,4 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
-    /**
-     * Main method to launch the JavaFX application.
-     *
-     * @param args command line arguments (not used)
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
