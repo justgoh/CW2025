@@ -2,6 +2,34 @@
 
 **Compilation Instructions**
 
+**Prerequisites**
+
+* Java Development Kit (JDK) 21 or higher
+* IntelliJ IDEA
+
+**Build and Run**
+
+1. Clone the repository:
+   git clone https://github.com/justgoh/CW2025.git
+
+2. Open the project in IntelliJ IDEA:
+    - File → Open → Select the CW2025 folder
+
+3. Wait for Maven to import dependencies automatically
+
+4. Run the application using Maven:
+    - Open the Maven panel on the right side of IntelliJ
+    - Expand the project tree
+    - Navigate to Plugins → javafx
+    - Double-click javafx:run
+
+   (Optional: Run clean first from Lifecycle to ensure a fresh build)
+
+**Alternative: Run from Main Class**
+
+- Locate Main.java in the project explorer
+- Right-click → Run Main.main()
+
 **Implemented and Working Properly:**
 
 1. **Tetris Piece Movement**
